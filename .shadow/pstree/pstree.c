@@ -59,7 +59,7 @@ TreeNode* CreateTreeNode(int pid, const char* name){
     return newnode;
 }
 
-TreeNode* pNode[100005];
+TreeNode* pNode[200005];
 int cnt;
 int parent_son[10005][2];
 
