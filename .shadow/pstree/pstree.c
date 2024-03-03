@@ -50,7 +50,7 @@ TreeNode* CreateTreeNode(int pid, const char* name){
     TreeNode *newnode = (TreeNode*)malloc(sizeof(TreeNode));
     if(newnode == NULL) return NULL;
     newnode->pid = pid;
-    if(strlen(newnode->name) > 64){
+    if(strlen(name) >= 64){
         assert(0);
     }
     strcpy(newnode->name, name);
