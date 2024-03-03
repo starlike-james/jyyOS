@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 bool show_pids_flag = false, nemuric_sort_flag = false, version_flag = false;
+//int f[100005];
 
 void parse_arg(int argc, char *argv[]){
    const struct option table[] = {
@@ -38,6 +39,66 @@ bool isNumber(const char *str){
     return true;
 }
 
+typedef struct TreeNode{
+    int pid;
+    char name[25];
+    struct TreeNode* leftchild;
+    struct TreeNode* rightsibling;
+}TreeNode;
+
+TreeNode* CreateTreeNode(int pid, const char* name){
+    TreeNode *newnode = (TreeNode*)malloc(sizeof(TreeNode));
+    if(newnode == NULL) return NULL;
+    newnode->pid = pid;
+    strcpy(newnode->name, name);
+    newnode->leftchild = NULL;
+    newnode->rightsibling = NULL;
+    return newnode;
+}
+
+TreeNode* pNode[100005];
+int cnt;
+int parent_son[10005][2];
+
+void visit_procfs(){
+    DIR *directory;
+    struct dirent *entry;
+
+    directory = opendir("/proc");
+    if(directory == NULL){
+        perror("opendir");
+        exit(1);
+    }
+    while((entry = readdir(directory)) != NULL){
+        char *pid_dir = entry->d_name;
+        if(isNumber(pid_dir)){
+            //printf("proc/%s\n", pid_dir);
+            char filename[40] = "";
+            int pid = atoi(pid_dir);
+            sprintf(filename, "/proc/%d/stat", pid);
+            FILE* fp = fopen(filename, "r");
+            if(fp == NULL){
+                perror("fopen");
+                continue;
+            }
+            int ppid = 0;
+            char pid_name[20];
+            char Umask[5];
+            fscanf(fp, "%d %s %s %d", &pid, pid_name, Umask, &ppid);
+            if(pid > 100005 || ppid > 100005){
+                fprintf(stderr,"The pNode array is too small.");
+                assert(0);
+            }
+            pNode[pid] = CreateTreeNode(pid, pid_name);
+            parent_son[cnt][0] = ppid;
+            parent_son[cnt][1] = pid;
+            cnt++;
+            //printf("pid = %d name = %s ppid = %d\n", pid, pid_name, ppid);
+        }
+    }
+
+}
+
 int main(int argc, char *argv[]) {
   for (int i = 0; i < argc; i++) {
     assert(argv[i]);
@@ -52,33 +113,6 @@ int main(int argc, char *argv[]) {
       return 0;
   }
 
-  DIR *directory;
-  struct dirent *entry;
-
-  directory = opendir("/proc");
-  if(directory == NULL){
-      perror("opendir");
-      exit(1);
-  }
-  while((entry = readdir(directory)) != NULL){
-      char *pid_dir = entry->d_name;
-      if(isNumber(pid_dir)){
-          printf("proc/%s\n", pid_dir);
-          char filename[40] = "";
-          int pid = atoi(pid_dir);
-          sprintf(filename, "/proc/%d/stat", pid);
-          FILE* fp = fopen(filename, "r");
-          if(fp == NULL){
-              perror("fopen");
-              continue;
-          }
-          int ppid = 0;
-          char pid_name[20];
-          char Umask[5];
-          fscanf(fp, "%d %s %s %d", &pid, pid_name, Umask, &ppid);
-          printf("pid = %d name = %s ppid = %d\n", pid, pid_name, ppid);
-      }
-  }
 
 
   
