@@ -134,12 +134,12 @@ void buildtree(){
               continue;
           }
           TreeNode *current = head;
-          const char *sibling_name = current->rightsibling->name;
-          int sibling_pid = current->rightsibling->pid;
-          while(current->rightsibling != NULL && (strcmp(sibling_name, pid_name) > 0 || (strcmp(sibling_name, pid_name) == 0 && sibling_pid < pid)) ){
+          //const char *sibling_name = current->rightsibling->name;
+          //int sibling_pid = current->rightsibling->pid;
+          while(current->rightsibling != NULL && (strcmp(current->rightsibling->name, pid_name) > 0 || (strcmp(current->rightsibling->name, pid_name) == 0 && current->rightsibling->pid < pid)) ){
               current = current->rightsibling;
-              sibling_name = current->rightsibling->name;
-              sibling_pid = current->rightsibling->pid;
+              //sibling_name = current->rightsibling->name;
+              //sibling_pid = current->rightsibling->pid;
           }
           pNode[pid]->rightsibling = current->rightsibling;
           current->rightsibling = pNode[pid];
@@ -164,9 +164,8 @@ void traversal(TreeNode *current){
         printf("\n");
     }
     dep++;
-    for (TreeNode *s = current->leftchild;
-            s != NULL; s = s->rightsibling) {
-        traversal(s);
+    for (TreeNode *child = current->leftchild; child != NULL; child = child->rightsibling) {
+        traversal(child);
     }
     dep--;
 }
