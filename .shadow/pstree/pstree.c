@@ -5,7 +5,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <ctype.h>
-
+#include <stdlib.h>
 bool show_pids_flag = false, nemuric_sort_flag = false, version_flag = false;
 
 void parse_arg(int argc, char *argv[]){
@@ -37,6 +37,7 @@ bool isNumber(const char *str){
     }
     return true;
 }
+
 int main(int argc, char *argv[]) {
   for (int i = 0; i < argc; i++) {
     assert(argv[i]);
@@ -57,14 +58,23 @@ int main(int argc, char *argv[]) {
   directory = opendir("/proc");
   if(directory == NULL){
       perror("opendir");
-      return 1;
+      exit(1);
   }
   while((entry = readdir(directory)) != NULL){
-      char *d_name = entry->d_name;
-      if(isNumber(d_name)){
-          printf("proc/%s\n", d_name);
+      char *pid_dir = entry->d_name;
+      if(isNumber(pid_dir)){
+          printf("proc/%s\n", pid_dir);
+          char filename[40] = "";
+          sprintf(filename, "/proc/%s/stat", pid_dir);
+          FILE* fp = fopen(filename, "r");
+          int pid = 0; int ppid = 0;
+          char pid_name[20];
+          char Umask[5];
+          fscanf(fp, "%d %s %s %d", &pid, pid_name, Umask, &ppid);
+          printf("pid = %d name = %s ppid = %d\n", pid, pid_name, ppid);
       }
   }
+
 
   
 
