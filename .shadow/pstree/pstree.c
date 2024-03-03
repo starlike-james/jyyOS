@@ -88,7 +88,7 @@ void visit_procfs(){
             char pid_name[20];
             char Umask[5];
             fscanf(fp, "%d %s %s %d", &pid, pid_name, Umask, &ppid);
-            if(pid > 100005 || ppid > 100005){
+            if(pid > 200005 || ppid > 200005){
                 fprintf(stderr,"The pNode array is too small.");
                 assert(0);
             }
