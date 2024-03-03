@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
   while((entry = readdir(directory)) != NULL){
       char *d_name = entry->d_name;
       if(isNumber(d_name)){
-          printf("proc/%s", d_name);
+          printf("proc/%s\n", d_name);
       }
   }
 
