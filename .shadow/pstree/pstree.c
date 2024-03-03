@@ -41,7 +41,7 @@ bool isNumber(const char *str){
 
 typedef struct TreeNode{
     int pid;
-    char name[25];
+    char name[64];
     struct TreeNode* leftchild;
     struct TreeNode* rightsibling;
 }TreeNode;
@@ -50,6 +50,9 @@ TreeNode* CreateTreeNode(int pid, const char* name){
     TreeNode *newnode = (TreeNode*)malloc(sizeof(TreeNode));
     if(newnode == NULL) return NULL;
     newnode->pid = pid;
+    if(strlen(newnode->name) > 64){
+        assert(0);
+    }
     strcpy(newnode->name, name);
     newnode->leftchild = NULL;
     newnode->rightsibling = NULL;
