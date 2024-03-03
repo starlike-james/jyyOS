@@ -14,19 +14,26 @@ int main(int argc, char *argv[]) {
       {"version"     , no_argument, NULL, 'V'},
   };
   int opt = 0;
-  while((opt = getopt_long(argc, argv, "pnV", table, NULL))){
+  while((opt = getopt_long(argc, argv, "pnV", table, NULL)) != -1){
       switch (opt){
           case 'p':
               {
                   printf("p\n");
+                  break;
               }
           case 'n':
               {
                   printf("n\n");
+                  break;
               }
           case 'V':
               {
                   printf("V\n");
+                  break;
+              }
+          default:
+              {
+                  printf("default: invalid argument\n");
               }
 
       }
