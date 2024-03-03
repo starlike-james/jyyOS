@@ -160,6 +160,9 @@ void traversal(TreeNode *current){
     if(show_pids_flag){
         printf("(%d)\n", current->pid);
     }
+    else{
+        printf("\n");
+    }
     dep++;
     traversal(current->leftchild);
     dep--;
