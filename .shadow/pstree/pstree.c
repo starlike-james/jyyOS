@@ -109,7 +109,7 @@ void buildtree(){
   for(int i = 0; i < cnt; i++){
       int ppid = parent_son[i][0];
       int pid = parent_son[i][1];
-      assert(ppid < 200005);
+      assert(0 <= ppid && ppid < 200005);
       TreeNode *head = pNode[ppid]->leftchild;
       const char *pid_name = pNode[pid]->name;
       if(nemuric_sort_flag){
