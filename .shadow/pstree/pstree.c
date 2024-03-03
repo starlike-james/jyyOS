@@ -16,11 +16,11 @@ int main(int argc, char *argv[]) {
       {0             , 0          , NULL,  0 },
   };
   int opt = 0;
-  bool show_pids_flag = false, nemuric_sorc_flag = false, version_flag = false;
+  bool show_pids_flag = false, nemuric_sort_flag = false, version_flag = false;
   while((opt = getopt_long(argc, argv, "pnV", table, NULL)) != -1){
       switch (opt){
           case 'p': show_pids_flag = true; break;
-          case 'n': nemuric_sorc_flag = true; break;
+          case 'n': nemuric_sort_flag = true; break;
           case 'V': version_flag = true; break;
           default: printf("default: invalid argument\n"); break;
       }
