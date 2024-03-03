@@ -164,9 +164,11 @@ void traversal(TreeNode *current){
         printf("\n");
     }
     dep++;
-    traversal(current->leftchild);
+    for (TreeNode *s = current->leftchild;
+            s != NULL; s = s->rightsibling) {
+        traversal(s);
+    }
     dep--;
-    traversal(current->rightsibling);
 }
 int main(int argc, char *argv[]) {
     for (int i = 0; i < argc; i++) {
