@@ -65,9 +65,14 @@ int main(int argc, char *argv[]) {
       if(isNumber(pid_dir)){
           printf("proc/%s\n", pid_dir);
           char filename[40] = "";
-          sprintf(filename, "/proc/%s/stat", pid_dir);
+          int pid = atoi(pid_dir);
+          sprintf(filename, "/proc/%d/stat", pid);
           FILE* fp = fopen(filename, "r");
-          int pid = 0; int ppid = 0;
+          if(fp == NULL){
+              perror("fopen");
+              continue;
+          }
+          int ppid = 0;
           char pid_name[20];
           char Umask[5];
           fscanf(fp, "%d %s %s %d", &pid, pid_name, Umask, &ppid);
