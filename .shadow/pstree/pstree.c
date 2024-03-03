@@ -89,6 +89,10 @@ void visit_procfs(){
                 fprintf(stderr,"The pNode array is too small.");
                 assert(0);
             }
+
+            /*if(pNode[pid] != NULL){
+                pNode[pid]->name =
+            }*/
             pNode[pid] = CreateTreeNode(pid, pid_name);
             parent_son[cnt][0] = ppid;
             parent_son[cnt][1] = pid;
@@ -96,26 +100,81 @@ void visit_procfs(){
             //printf("pid = %d name = %s ppid = %d\n", pid, pid_name, ppid);
         }
     }
-
 }
 
+void buildtree(){
+  for(int i = 0; i < cnt; i++){
+      int ppid = parent_son[i][0];
+      int pid = parent_son[i][1];
+      TreeNode *head = pNode[ppid]->leftchild;
+      const char *pid_name = pNode[pid]->name;
+      if(nemuric_sort_flag){
+          if(head == NULL || head->pid > pid){
+              pNode[pid]->rightsibling = head;
+              pNode[ppid]->leftchild = pNode[pid];
+              continue;
+          }
+          TreeNode *current = head;
+          while(current->rightsibling != NULL && current->rightsibling->pid < pid){
+              current = current->rightsibling; 
+          }
+          pNode[pid]->rightsibling = current->rightsibling;
+          current->rightsibling = pNode[pid];
+      }
+      else
+      {
+          if(head == NULL || (strcmp(head->name, pid_name) > 0) || (strcmp(head->name, pid_name) == 0 && head->pid > pid)){
+              pNode[pid]->rightsibling = head;
+              pNode[ppid]->leftchild = pNode[pid];
+              continue;
+          }
+          TreeNode *current = head;
+          const char *sibling_name = current->rightsibling->name;
+          int sibling_pid = current->rightsibling->pid;
+          while(current->rightsibling != NULL && (strcmp(sibling_name, pid_name) > 0 || (strcmp(sibling_name, pid_name) == 0 && sibling_pid < pid)) ){
+              current = current->rightsibling;
+              sibling_name = current->rightsibling->name;
+              sibling_pid = current->rightsibling->pid;
+          }
+          pNode[pid]->rightsibling = current->rightsibling;
+          current->rightsibling = pNode[pid];
+      }
+
+  }
+}
+
+int dep;
+void traversal(TreeNode *current){
+    if(current == NULL){
+        return;
+    }
+    for(int i = 0; i < dep; i++){
+        printf("\t");
+    }
+    printf("%s", current->name);
+    if(show_pids_flag){
+        printf("(%d)\n", current->pid);
+    }
+    dep++;
+    traversal(current->leftchild);
+    dep--;
+    traversal(current->rightsibling);
+}
 int main(int argc, char *argv[]) {
-  for (int i = 0; i < argc; i++) {
-    assert(argv[i]);
-    printf("argv[%d] = %s\n", i, argv[i]);
-  }
-  assert(!argv[argc]);
+    for (int i = 0; i < argc; i++) {
+        assert(argv[i]);
+        printf("argv[%d] = %s\n", i, argv[i]);
+    }
+    assert(!argv[argc]);
 
-  parse_arg(argc, argv);
+    parse_arg(argc, argv);
  
-  if(version_flag == true){
-      fprintf(stderr, "wzy's pstree\n");
-      return 0;
-  }
-
-
-
-  
-
-  return 0;
+    if(version_flag == true){
+        fprintf(stderr, "wzy's pstree\n");
+        return 0;
+    }
+    visit_procfs();
+    buildtree();
+    traversal(pNode[1]);
+    return 0;
 }
