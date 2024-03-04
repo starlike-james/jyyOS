@@ -87,12 +87,12 @@ void visit_procfs(){
             int ppid = 0;
             char pid_name[64];
             char Umask[10];
-            //fseek(fp, 0, SEEK_END);
-            //int size = ftell(fp);
-            //printf("%d\n", size);
-            //char *stat = (char *)malloc(size);
+            fseek(fp, 0, SEEK_END);
+            int size = ftell(fp);
+            printf("%d\n", size);
+            char *stat = (char *)malloc(size);
             //fseek(fp, 0, SEEK_SET);
-            char stat[100];
+            //char stat[100];
             if(fgets(stat, 100, fp) == NULL){
                 assert(0);
             }
