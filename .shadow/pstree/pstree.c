@@ -86,20 +86,20 @@ void visit_procfs(){
             }
             int ppid = 0;
             char pid_name[64];
-            char Umask[5];
-            fseek(fp, 0, SEEK_END);
-            printf("%s\n", filename);
-            int size = ftell(fp);
-            printf("%d\n", size);
-            char *stat = (char *)malloc(size);
-            fseek(fp, 0, SEEK_SET);
-            if(fgets(stat, size, fp) == NULL){
+            char Umask[10];
+            //fseek(fp, 0, SEEK_END);
+            //int size = ftell(fp);
+            //printf("%d\n", size);
+            //char *stat = (char *)malloc(size);
+            //fseek(fp, 0, SEEK_SET);
+            char stat[100];
+            if(fgets(stat, 100, fp) == NULL){
                 assert(0);
             }
             char *current = stat + strlen(pid_dir) + 1;
             int parenthsis = 0;
             int slen = 0;
-            for(int i = 0; i < size; i++){
+            for(int i = 0; i < 100; i++){
                 char ch = *(current + i);
                 if(ch == '('){
                     parenthsis++;
@@ -116,7 +116,7 @@ void visit_procfs(){
             pid_name[slen] = '\0';
             current = current + 2 + slen + 1; 
             sscanf(current, "%s %d", Umask, &ppid);
-            free(stat);
+            //free(stat);
             //fscanf(fp, "%d %s %s %d", &pid, pid_name, Umask, &ppid);
             if(pid > 200005 || ppid > 200005){
                 fprintf(stderr,"The pNode array is too small.");
