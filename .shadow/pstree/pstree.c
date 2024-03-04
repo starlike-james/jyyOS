@@ -63,8 +63,6 @@ TreeNode* pNode[200005];
 int cnt;
 int parent_son[10005][2];
 
-void get_ppid_and_name(FILE *fp)
-
 void visit_procfs(){
     DIR *directory;
     struct dirent *entry;
