@@ -88,6 +88,7 @@ void visit_procfs(){
             char pid_name[64];
             char Umask[5];
             fseek(fp, 0, SEEK_END);
+            printf("%s\n", filename);
             int size = ftell(fp);
             printf("%d\n", size);
             char *stat = (char *)malloc(size);
