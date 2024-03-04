@@ -90,6 +90,7 @@ void visit_procfs(){
             fseek(fp, 0, SEEK_SET);
             int size = ftell(fp);
             char *stat = (char *)malloc(size);
+            fseek(fp, 0, SEEK_SET);
             if(fgets(stat, size, fp) == NULL){
                 assert(0);
             }
