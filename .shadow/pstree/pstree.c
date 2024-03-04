@@ -63,6 +63,8 @@ TreeNode* pNode[200005];
 int cnt;
 int parent_son[10005][2];
 
+void get_ppid_and_name(FILE *fp)
+
 void visit_procfs(){
     DIR *directory;
     struct dirent *entry;
@@ -85,9 +87,36 @@ void visit_procfs(){
                 continue;
             }
             int ppid = 0;
-            char pid_name[20];
+            char pid_name[64];
             char Umask[5];
-            fscanf(fp, "%d %s %s %d", &pid, pid_name, Umask, &ppid);
+            fseek(fp, 0, SEEK_SET);
+            int size = ftell(fp);
+            char *stat = (char *)malloc(size);
+            if(fgets(stat, size, fp) == NULL){
+                assert(0);
+            }
+            char *current = stat + strlen(pid_dir) + 1;
+            int parenthsis = 0;
+            int slen = 0;
+            for(int i = 0; i < size; i++){
+                char ch = *(current + i);
+                if(ch == '('){
+                    parenthsis++;
+                }
+                else if(ch == ')'){
+                    parenthsis--;
+                }
+                else if(ch == ' ' && parenthsis == 0){
+                    slen = i - 2;
+                    break;
+                }
+            }
+            strncpy(pid_name, current + 1, slen);
+            pid_name[slen] = '\0';
+            current = current + 2 + slen + 1; 
+            sscanf(current, "%s %d", Umask, &ppid);
+            free(stat);
+            //fscanf(fp, "%d %s %s %d", &pid, pid_name, Umask, &ppid);
             if(pid > 200005 || ppid > 200005){
                 fprintf(stderr,"The pNode array is too small.");
                 assert(0);
