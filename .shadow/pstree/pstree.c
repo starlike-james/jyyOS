@@ -91,9 +91,9 @@ void visit_procfs(){
             int size = ftell(fp);
             printf("%d\n", size);
             char *stat = (char *)malloc(size);
-            //fseek(fp, 0, SEEK_SET);
+            fseek(fp, 0, SEEK_SET);
             //char stat[100];
-            if(fgets(stat, 100, fp) == NULL){
+            if(fgets(stat, size, fp) == NULL){
                 assert(0);
             }
             char *current = stat + strlen(pid_dir) + 1;
