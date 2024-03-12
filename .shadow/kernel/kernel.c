@@ -29,7 +29,7 @@ void print_key() {
   }
 }
 
-static void draw_tile(int x, int y, int w, int h, uint32_t color) {
+/*static void draw_tile(int x, int y, int w, int h, uint32_t color) {
   uint32_t pixels[w * h]; // WARNING: large stack-allocated memory
   AM_GPU_FBDRAW_T event = {
     .x = x, .y = y, .w = w, .h = h, .sync = 1,
@@ -54,7 +54,30 @@ void splash() {
       }
     }
   }
+}*/
+
+void splash() {
+  AM_GPU_CONFIG_T info = {0};
+  ioe_read(AM_GPU_CONFIG, &info);
+  w = info.width;
+  h = info.height;
+
+  for (int pic_x = 0; pic_x < pic_width; pic_x++) {
+    for (int pic_y = 0; pic_y < pic_height; pic_y++) {
+        int x = w * pic_x / pic_width;
+        int y = h * pic_y / pic_height;
+        uint32_t pixels[1];
+        pixels[0] = pic_bin[pic_x + pic_y * pic_width];
+        AM_GPU_FBDRAW_T event = {
+            .x = x, .y = y, .w = 1, .h = 1, .sync = 0,
+            .pixels = pixels
+        };
+        ioe_write(AM_GPU_FBDRAW, &event);
+    }
+  }
+  io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
 }
+
 
 // Operating system is a C program!
 int main(const char *args) {
@@ -69,7 +92,6 @@ int main(const char *args) {
   puts("Press any key to see its key code...\n");
   while (1) {
     print_key();
-    splash();
   }
   return 0;
 }
