@@ -67,6 +67,8 @@ void splash() {
         int x = w * pic_x / pic_width;
         int y = h * pic_y / pic_height;
         uint32_t pixels[1];
+        uint8_t* pic_src = pic_bin + pic_x + pic_y * pic_width;
+        memcpy(pixels, pic_src, 4);
         pixels[0] = pic_bin[pic_x + pic_y * pic_width];
         AM_GPU_FBDRAW_T event = {
             .x = x, .y = y, .w = 1, .h = 1, .sync = 0,
