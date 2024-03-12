@@ -2,6 +2,7 @@
 #include <amdev.h>
 #include <klib.h>
 #include <klib-macros.h>
+#include "pic.h"
 
 #define SIDE 16
 
