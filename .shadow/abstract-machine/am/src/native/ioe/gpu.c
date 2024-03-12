@@ -7,8 +7,8 @@
 # define W    800
 # define H    600
 #else
-# define W    320
-# define H    200
+# define W    640
+# define H    480
 #endif
 
 #define FPS   60
