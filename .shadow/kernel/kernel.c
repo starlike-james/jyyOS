@@ -66,8 +66,6 @@ void splash() {
       for(int y = 0; y < h; y++){
           int pic_x = pic_width * x / w;
           int pic_y = pic_height * y / h;
-          int x = w * pic_x / pic_width;
-          int y = h * pic_y / pic_height;
           uint32_t pixels[1];
           uint8_t* pic_src = pic_bin + (pic_x + pic_y * pic_width) * sizeof(uint32_t);
           memcpy(pixels, pic_src, 4);
