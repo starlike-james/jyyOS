@@ -62,20 +62,23 @@ void splash() {
   w = info.width;
   h = info.height;
 
-  for (int pic_x = 0; pic_x < pic_width; pic_x++) {
-    for (int pic_y = 0; pic_y < pic_height; pic_y++) {
-        int x = w * pic_x / pic_width;
-        int y = h * pic_y / pic_height;
-        uint32_t pixels[1];
-        uint8_t* pic_src = pic_bin + (pic_x + pic_y * pic_width) * sizeof(uint32_t);
-        memcpy(pixels, pic_src, 4);
-        AM_GPU_FBDRAW_T event = {
-            .x = x, .y = y, .w = 1, .h = 1, .sync = 0,
-            .pixels = pixels
-        };
-        ioe_write(AM_GPU_FBDRAW, &event);
-    }
+  for(int x = 0; x < w; x++){
+      for(int y = 0; y < h; y++){
+          int pic_x = pic_width * x / w;
+          int pic_y = pic_height * y / h;
+          int x = w * pic_x / pic_width;
+          int y = h * pic_y / pic_height;
+          uint32_t pixels[1];
+          uint8_t* pic_src = pic_bin + (pic_x + pic_y * pic_width) * sizeof(uint32_t);
+          memcpy(pixels, pic_src, 4);
+          AM_GPU_FBDRAW_T event = {
+              .x = x, .y = y, .w = 1, .h = 1, .sync = 0,
+              .pixels = pixels
+          };
+          ioe_write(AM_GPU_FBDRAW, &event);
+      }
   }
+  
   io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
 }
 
