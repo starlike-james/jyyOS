@@ -2,6 +2,7 @@
 #include <amdev.h>
 #include <klib.h>
 #include <klib-macros.h>
+#include "pic.h"
 
 #define SIDE 16
 
@@ -19,13 +20,16 @@ void print_key() {
   AM_INPUT_KEYBRD_T event = { .keycode = AM_KEY_NONE };
   ioe_read(AM_INPUT_KEYBRD, &event);
   if (event.keycode != AM_KEY_NONE && event.keydown) {
+      if(event.keycode == AM_KEY_ESCAPE){
+          halt(0);
+      }
     puts("Key pressed: ");
     puts(key_names[event.keycode]);
     puts("\n");
   }
 }
 
-static void draw_tile(int x, int y, int w, int h, uint32_t color) {
+/*static void draw_tile(int x, int y, int w, int h, uint32_t color) {
   uint32_t pixels[w * h]; // WARNING: large stack-allocated memory
   AM_GPU_FBDRAW_T event = {
     .x = x, .y = y, .w = w, .h = h, .sync = 1,
@@ -50,7 +54,32 @@ void splash() {
       }
     }
   }
+}*/
+
+void splash() {
+  AM_GPU_CONFIG_T info = {0};
+  ioe_read(AM_GPU_CONFIG, &info);
+  w = info.width;
+  h = info.height;
+
+  for(int x = 0; x < w; x++){
+      for(int y = 0; y < h; y++){
+          int pic_x = pic_width * x / w;
+          int pic_y = pic_height * y / h;
+          uint32_t pixels[1];
+          uint8_t* pic_src = pic_bin + (pic_x + pic_y * pic_width) * sizeof(uint32_t);
+          memcpy(pixels, pic_src, 4);
+          AM_GPU_FBDRAW_T event = {
+              .x = x, .y = y, .w = 1, .h = 1, .sync = 0,
+              .pixels = pixels
+          };
+          ioe_write(AM_GPU_FBDRAW, &event);
+      }
+  }
+  
+  io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
 }
+
 
 // Operating system is a C program!
 int main(const char *args) {
