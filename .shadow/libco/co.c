@@ -100,7 +100,7 @@ void co_yield() {
     }
     struct co* prev = current;
     int random = rand() % conum;
-    int idx = 0;
+    int idx = -1;
     int cnt = 0;
     while(cnt != random){
         if(colist[idx] != NULL){
