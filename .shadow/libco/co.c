@@ -29,6 +29,7 @@ static void co_func_wrapper(struct co *co){
     co->func(co->arg);
     co->state = FINISH;
     co_yield();
+    assert(0);
 }
 
 #ifdef __x86_64__
