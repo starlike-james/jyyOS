@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <time.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define STACK_SIZE 65536 
 
@@ -109,6 +110,7 @@ void co_yield() {
             cnt++;
         }
     }
+    printf("idx = %d\n", idx);
     assert(idx < 128 && idx >= 0);
     assert(colist[idx]);
     current = colist[idx];
