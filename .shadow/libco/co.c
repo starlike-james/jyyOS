@@ -30,6 +30,7 @@ static void co_func_wrapper(struct co *co){
     co->func(co->arg);
     co->state = FINISH;
     co_yield();
+    conum--;
     assert(0);
 }
 
@@ -81,7 +82,6 @@ void co_wait(struct co *co) {
     while(co->state != FINISH){
         co_yield();
     }
-    conum--;
     free(co->ucontext.uc_stack.ss_sp);
     free(co);
     co = NULL;
