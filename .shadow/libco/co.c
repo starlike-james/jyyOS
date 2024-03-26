@@ -103,10 +103,10 @@ void co_yield() {
     int idx = -1;
     int cnt = 0;
     while(cnt != random){
+        idx++;
         if(colist[idx] != NULL){
             cnt++;
         }
-        idx++;
     }
     assert(colist[idx]);
     current = colist[idx];
