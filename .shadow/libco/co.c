@@ -122,6 +122,6 @@ void co_yield() {
     assert(idx < 128 && idx >= 0);
     assert(colist[idx]);
     current = colist[idx];
-    printf("prev:%s current:%s\n", prev->name, current->name);
+    //printf("prev:%s current:%s\n", prev->name, current->name);
     swapcontext(&prev->ucontext, &current->ucontext);
 }
