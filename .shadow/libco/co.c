@@ -90,8 +90,8 @@ void co_wait(struct co *co) {
 void co_yield() {
     if(current == NULL){
         srand(time(NULL));
+        colist[0] = malloc(sizeof(struct co));
         struct co *co_main = colist[0];
-        co_main = malloc(sizeof(struct co));
         assert(co_main);
         conum++;
         //getcontext(&co_main->ucontext);
@@ -104,8 +104,8 @@ void co_yield() {
     int random = 1 + rand() % conum;
     int idx = -1;
     int cnt = 0;
-    printf("conum = %d\n", conum);
-    printf("random = %d\n", random);
+    printf("conum = %d ", conum);
+    printf("random = %d ", random);
     while(cnt != random){
         idx++;
         if(colist[idx] != NULL && colist[idx]->state == WORKING){
