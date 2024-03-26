@@ -3,6 +3,7 @@
 #include <ucontext.h>
 #include <assert.h>
 #include <time.h>
+#include <stdint.h>
 
 #define STACK_SIZE 65536 
 
@@ -30,6 +31,28 @@ static void co_func_wrapper(struct co *co){
     co_yield();
 }
 
+#ifdef __x86_64__
+static void co_func_outter_wrapper(int high, int low) {
+  struct co *co = (struct co*)(((uintptr_t)high << 32) | low);
+  co_func_wrapper(co);
+}
+static void makecontext_wrap(struct co *co) {
+    uint32_t high = (uint32_t)(((uintptr_t) co >> 32) & 0xffffffff);
+    uint32_t low  = (uint32_t)(((uintptr_t) co & 0xffffffff));
+    makecontext(&co->ucontext, (void (*)())co_func_outter_wrapper, 2, high, low);
+}
+
+#else
+
+static void co_func_outter_wrapper(int addr) {
+    struct co *co = (struct co *)(uintptr_t)addr;
+    co_func_wrapper(co);
+}
+static void makecontext_wrap(struct co *co) {
+    makecontext(&co->ucontext, (void (*)())co_func_outter_wrapper, 1, (uintptr_t)co);
+}
+#endif
+
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
     int idx = 1; // colist[0] is main
     while(colist[idx] != NULL){
@@ -47,7 +70,7 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
     co->func = func;
     co->arg = arg;
     co->state = WORKING;
-    makecontext(&(co->ucontext), (void (*)(void))co_func_wrapper, 1, co);
+    makecontext_wrap(co);
 
     return co;
 }
