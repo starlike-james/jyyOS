@@ -104,6 +104,7 @@ void co_yield() {
     int random = 1 + rand() % conum;
     int idx = -1;
     int cnt = 0;
+    printf("cnt = %d\n", cnt);
     while(cnt != random){
         idx++;
         if(colist[idx] != NULL && colist[idx]->state == WORKING){
