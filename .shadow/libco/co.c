@@ -17,6 +17,7 @@ enum{
 struct co {
     ucontext_t ucontext;
     char *name;
+    int idx;
     void (*func)(void *);
     void *arg;
     int state;
@@ -68,6 +69,7 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
     struct co* co = colist[idx];
     conum++;
     co->name = malloc(strlen(name) + 1);
+    co->idx = idx;
     strcpy(co->name, name);
     getcontext(&(co->ucontext));
     co->ucontext.uc_link = NULL;
@@ -86,10 +88,12 @@ void co_wait(struct co *co) {
     while(co->state != FINISH){
         co_yield();
     }
+    int idx = co->idx;
     free(co->ucontext.uc_stack.ss_sp);
     free(co->name);
     free(co);
     co = NULL;
+    assert(colist[idx] == NULL);
 }
 
 const char main_name[5] = "main";
@@ -102,6 +106,7 @@ void co_yield() {
         assert(co_main);
         conum++;
         co_main->name = malloc(strlen(main_name) + 1);
+        co_main->idx = 0;
         strcpy(co_main->name, main_name);
         //getcontext(&co_main->ucontext);
         co_main->func = NULL;
