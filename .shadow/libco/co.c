@@ -105,10 +105,11 @@ void co_yield() {
     int cnt = 0;
     while(cnt != random){
         idx++;
-        if(colist[idx] != NULL){
+        if(colist[idx] != NULL && colist[idx]->state == WORKING){
             cnt++;
         }
     }
+    assert(idx < 128 && idx >= 0);
     assert(colist[idx]);
     current = colist[idx];
     swapcontext(&prev->ucontext, &current->ucontext);
