@@ -29,8 +29,8 @@ static int conum = 0;
 static void co_func_wrapper(struct co *co){
     co->func(co->arg);
     co->state = FINISH;
-    co_yield();
     conum--;
+    co_yield();
     assert(0);
 }
 
