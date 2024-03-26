@@ -32,8 +32,8 @@ static void co_func_wrapper(struct co *co){
 }
 
 #ifdef __x86_64__
-static void co_func_outter_wrapper(int high, int low) {
-  struct co *co = (struct co*)(((uintptr_t)high << 32) | low);
+static void co_func_outter_wrapper(uint32_t high, uint32_t low) {
+  struct co *co = (struct co*)((((uintptr_t)high) << 32) | low);
   co_func_wrapper(co);
 }
 static void makecontext_wrap(struct co *co) {
@@ -44,7 +44,7 @@ static void makecontext_wrap(struct co *co) {
 
 #else
 
-static void co_func_outter_wrapper(int addr) {
+static void co_func_outter_wrapper(uint32_t addr) {
     struct co *co = (struct co *)(uintptr_t)addr;
     co_func_wrapper(co);
 }
