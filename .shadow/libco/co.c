@@ -92,7 +92,8 @@ void co_wait(struct co *co) {
     free(co->ucontext.uc_stack.ss_sp);
     free(co->name);
     free(co);
-    co = NULL;
+    //co = NULL;
+    colist[idx] = NULL;
     assert(colist[idx] == NULL);
 }
 
