@@ -108,6 +108,7 @@ void co_yield() {
         }
         idx++;
     }
+    assert(colist[idx]);
     current = colist[idx];
     swapcontext(&prev->ucontext, &current->ucontext);
 }
