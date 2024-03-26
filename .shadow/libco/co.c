@@ -5,6 +5,7 @@
 #include <time.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #define STACK_SIZE 65536 
 
@@ -15,6 +16,7 @@ enum{
 
 struct co {
     ucontext_t ucontext;
+    char *name;
     void (*func)(void *);
     void *arg;
     int state;
@@ -65,6 +67,8 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
     assert(colist[idx]);
     struct co* co = colist[idx];
     conum++;
+    co->name = malloc(strlen(name) + 1);
+    strcpy(co->name, name);
     getcontext(&(co->ucontext));
     co->ucontext.uc_link = NULL;
     co->ucontext.uc_stack.ss_sp = malloc(STACK_SIZE);
@@ -83,9 +87,12 @@ void co_wait(struct co *co) {
         co_yield();
     }
     free(co->ucontext.uc_stack.ss_sp);
+    free(co->name);
     free(co);
     co = NULL;
 }
+
+const char main_name[5] = "main";
 
 void co_yield() {
     if(current == NULL){
@@ -94,6 +101,8 @@ void co_yield() {
         struct co *co_main = colist[0];
         assert(co_main);
         conum++;
+        co_main->name = malloc(strlen(main_name) + 1);
+        strcpy(co_main->name, main_name);
         //getcontext(&co_main->ucontext);
         co_main->func = NULL;
         co_main->arg = NULL;
@@ -113,5 +122,6 @@ void co_yield() {
     assert(idx < 128 && idx >= 0);
     assert(colist[idx]);
     current = colist[idx];
+    printf("prev:%s current:%s\n", prev->name, current->name);
     swapcontext(&prev->ucontext, &current->ucontext);
 }
