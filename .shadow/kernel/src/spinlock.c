@@ -5,7 +5,13 @@
 // from xv6-riscv to AbstractMachine:
 // https://github.com/mit-pdos/xv6-riscv
 
-struct lcpu lcpus[8];
+#define panic(...) \
+    do { \
+        printf("Panic: " __VA_ARGS__); \
+        halt(1); \
+    } while (0)
+
+struct lcpu lcpus[16];
 
 void push_off();
 void pop_off();
