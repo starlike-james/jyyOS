@@ -22,7 +22,7 @@ typedef struct {
     ((spinlock_t) { \
         .name = name_, \
         .status = UNLOCKED, \
-        .cpu = NULL, \
+        .lcpu = NULL, \
     })
 
 void spin_lock(spinlock_t *lk);

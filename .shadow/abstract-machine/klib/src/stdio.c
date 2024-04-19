@@ -8,6 +8,113 @@ enum { LONG = 1, LLONG };
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+// ************** spinlock start *************
+
+#define UNLOCKED  0
+#define LOCKED    1
+
+struct lcpu {
+    int noff;
+    int intena;
+};
+
+static struct lcpu lcpus[16];
+#define mycpu (&lcpus[cpu_current()])
+
+typedef struct {
+    const char *name;
+    int status;
+    struct lcpu *lcpu;
+} spinlock_t;
+
+#define spin_init(name_) \
+    ((spinlock_t) { \
+        .name = name_, \
+        .status = UNLOCKED, \
+        .lcpu = NULL, \
+    })
+
+static void spin_lock(spinlock_t *lk);
+static void spin_unlock(spinlock_t *lk);
+
+static void push_off();
+static void pop_off();
+static bool holding(spinlock_t *lk);
+
+static void spin_lock(spinlock_t *lk) {
+    // Disable interrupts to avoid deadlock.
+    push_off();
+
+    // This is a deadlock.
+    if (holding(lk)) {
+        panic("have acquire the lock yet!");
+    }
+
+    // This our main body of spin lock.
+    int got;
+    do {
+        got = atomic_xchg(&lk->status, LOCKED);
+    } while (got != UNLOCKED);
+
+    lk->lcpu = mycpu;
+}
+
+static void spin_unlock(spinlock_t *lk) {
+    if (!holding(lk)) {
+        panic("have released the lock yet!");
+    }
+
+    lk->lcpu = NULL;
+    atomic_xchg(&lk->status, UNLOCKED);
+
+    pop_off();
+}
+
+// Check whether this cpu is holding the lock.
+// Interrupts must be off.
+static bool holding(spinlock_t *lk) {
+    return (
+        lk->status == LOCKED &&
+        lk->lcpu == &lcpus[cpu_current()]
+    );
+}
+
+// push_off/pop_off are like intr_off()/intr_on()
+// except that they are matched:
+// it takes two pop_off()s to undo two push_off()s.
+// Also, if interrupts are initially off, then
+// push_off, pop_off leaves them off.
+static void push_off(void) {
+    int old = ienabled();
+    struct lcpu *c = mycpu;
+
+    iset(false);
+    if (c->noff == 0) {
+        c->intena = old;
+    }
+    c->noff += 1;
+}
+
+static void pop_off(void) {
+    struct lcpu *c = mycpu;
+
+    // Never enable interrupt when holding a lock.
+    if (ienabled()) {
+        panic("pop_off - interruptible");
+    }
+    
+    if (c->noff < 1) {
+        panic("pop_off");
+    }
+
+    c->noff -= 1;
+    if (c->noff == 0 && c->intena) {
+        iset(true);
+    }
+}
+
+// ************ spinlock end ***********
+
 static int itoa(uint64_t n, char *str, bool sig, uint32_t radix) {
     // uint64_t t;
     int is_neg = 0, nlen = 0, strlen = 0;
@@ -30,7 +137,11 @@ static int itoa(uint64_t n, char *str, bool sig, uint32_t radix) {
     str[strlen] = '\0';
     return strlen;
 }
+
 int printf(const char *fmt, ...) {
+    static spinlock_t lk = spin_init("printf");
+    spin_lock(&lk);
+
     va_list ap;
     va_start(ap, fmt);
     // int count=vsprintf(NULL,fmt,ap);
@@ -190,6 +301,7 @@ int printf(const char *fmt, ...) {
 #undef WRITE_CH
 
     va_end(ap);
+    spin_unlock(&lk);
     return count;
 }
 
