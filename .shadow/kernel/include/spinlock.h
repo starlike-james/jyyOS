@@ -1,3 +1,6 @@
+#ifndef SPINLOCK_H__
+#define SPINLOCK_H__
+
 #include <am.h>
 #include <klib.h>
 
@@ -13,14 +16,13 @@ extern struct lcpu lcpus[];
 #define mycpu (&lcpus[cpu_current()])
 
 typedef struct {
-    const char *name;
+    //const char *name;
     int status;
     struct lcpu *lcpu;
 } spinlock_t;
 
-#define spin_init(name_) \
+#define spin_init() \
     ((spinlock_t) { \
-        .name = name_, \
         .status = UNLOCKED, \
         .lcpu = NULL, \
     })
@@ -28,4 +30,4 @@ typedef struct {
 void spin_lock(spinlock_t *lk);
 void spin_unlock(spinlock_t *lk);
 
-
+#endif
