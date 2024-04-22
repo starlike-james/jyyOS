@@ -8,6 +8,7 @@ static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
     malloc(1024);
+    printf("malloc success!");
     //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //    putch(*s == '*' ? '0' + cpu_current() : *s);
     //}
