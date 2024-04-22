@@ -54,6 +54,7 @@ void *central_allocate(size_t size, bool slab){
                new->size = cur->size - SLAB_PAGE;
                new->next = cur->next;
                cur->next = new;
+               assert(new->magic != SLAB_MEM && new->magic != BIG_MEM);
                new->magic = FREE_MEM;
             }
 
@@ -98,6 +99,7 @@ void *central_allocate(size_t size, bool slab){
                 new->size = new_block_size;
                 new->next = cur->next;
                 cur->next = new;
+                assert(new->magic != SLAB_MEM && new->magic != BIG_MEM);
                 new->magic = FREE_MEM;
             } 
 
