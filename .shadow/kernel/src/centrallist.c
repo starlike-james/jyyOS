@@ -86,7 +86,7 @@ void *central_allocate(size_t size, bool slab){
             }
             
             assert((ptr & (align - 1)) == 0);
-            assert(size >= SLAB_PAGE);
+            assert(alloc_size >= SLAB_PAGE);
             assert(((uintptr_t)cur & SLAB_MASK) == 0);
             assert(ptr - SLAB_PAGE >= (uintptr_t)cur);
 
