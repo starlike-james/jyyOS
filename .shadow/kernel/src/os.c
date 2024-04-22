@@ -4,12 +4,13 @@
 static void os_init() {
     pmm->init();
 }
+void *ptr_all[8][1024];
 
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
     size_t align = 1 << 8;
-    void *ptr[48];
+    void **ptr = ptr_all[cpu_current()];
     memset(ptr, 0, 1024);
     int i = 0;
     for(i = 0; i < 4; i++){
