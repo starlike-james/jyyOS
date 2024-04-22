@@ -11,9 +11,9 @@ static void os_run() {
     size_t align = 1;
     while(align < (1024 * KiB)){
         void *ptr = pmm->alloc(align);
-        printf("pmm alloc %u success!\n", align);
+        printf("pmm alloc %x success!\n", align);
         pmm->free(ptr);
-        printf("pmm free %u success!\n", align); 
+        printf("pmm free %x success!\n", align); 
     }
    //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //    putch(*s == '*' ? '0' + cpu_current() : *s);
