@@ -28,7 +28,7 @@ static void os_run() {
 
     
     while(align < (1024 * KiB)){
-        memset(ptr, 0, 1024);
+        memset(ptr, 0, 1024 * sizeof(void *));
         int i = 0;
         for(i = 0; i < 512; i++){
             ptr[i] = pmm->alloc(align);
@@ -43,7 +43,7 @@ static void os_run() {
             }
         }
         size_t tem = align;
-        for(; i < 512; i++){
+        for(; i < 1024; i++){
             ptr[i] = pmm->alloc(align);
             printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align++;
