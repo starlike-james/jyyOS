@@ -87,15 +87,19 @@ void *slab_allocate(size_t size){
     spin_lock(&slablist->lk);
 
     slab_t *slab = slablist->head;
-    printf("1\n");
-    while((slab == NULL || slab->free_count == 0) && slab->next != NULL){
-        slab = slab->next;
-    }
     
-
-    if(slab == NULL || slab->free_count == 0){
+    if(slab == NULL){
         slab = add_new_slab(slablist, align);
     }
+    else{
+        while(slab->free_count == 0 && slab->next != NULL){
+            slab = slab->next;
+        }
+        if(slab->free_count == 0){
+            slab = add_new_slab(slablist, align);
+        }
+    } 
+
 
     //spin_lock(&slab->lk);
     assert(slab->free_count > 0);
