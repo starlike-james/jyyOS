@@ -15,17 +15,23 @@ static void os_run() {
         for(i = 0; i < 64; i++){
             ptr[i] = pmm->alloc(align);
             printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
-            align = SLAB_PAGE;
+            align = align / 2;
             i++;
             ptr[i] = pmm->alloc(align);
             printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
-            align = 4 * SLAB_PAGE;
+            align = align * 2;
+            if(ptr[i] == NULL){
+                break;
+            }
         }
         size_t tem = align;
         for(; i < 128; i++){
-            void *ptr = pmm->alloc(align);
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
+            ptr[i] = pmm->alloc(align);
+            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align++;
+            if(ptr[i] == NULL){
+                break;
+            }
         }
         for(int i = 0; i < 128; i++){
             if(ptr[i] == NULL){
