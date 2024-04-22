@@ -12,10 +12,10 @@ static void os_run() {
     for(int i = 0; i < 64; i++){
         void *ptr = pmm->alloc(align);
         printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
-        align++;
+        align = 2 * SLAB_PAGE;
         ptr = pmm->alloc(align);
         printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
-        align--;
+        align = 4 * SLAB_PAGE;
     }
     while(align < (1024 * KiB)){
         
