@@ -104,6 +104,7 @@ void *slab_allocate(size_t size){
     } 
 
     if(slab == NULL){
+        spin_unlock(&slablist->lk);
         return NULL;
     }
 
