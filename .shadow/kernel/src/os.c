@@ -9,7 +9,7 @@ static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
     size_t align = 1 << 8;
-    void *ptr[1024];
+    void *ptr[48];
     memset(ptr, 0, 1024);
     int i = 0;
     for(i = 0; i < 4; i++){
