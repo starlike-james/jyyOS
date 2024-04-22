@@ -38,7 +38,7 @@ static void os_run() {
                 continue;
             }
             pmm->free(ptr[i]);
-            printf("pmm free %x success!, ptr = %x\n", align, ptr);
+            printf("pmm free %x success!, ptr = %x\n", align, ptr[i]);
         }
         align = tem;
         align = align << 1;
