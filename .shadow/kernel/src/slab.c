@@ -48,6 +48,9 @@ static slab_t *add_new_slab(slablist_t* slablist, size_t size){
     assert(holding(&slablist->lk));
 
     void *ptr = central_allocate(SLAB_PAGE, true);
+    if(ptr == NULL){
+        return NULL;
+    }
     slab_t *slab = slab_init(ptr, size);
     slab->slablist = slablist;
     slab->next = slablist->head;
