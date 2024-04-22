@@ -9,9 +9,9 @@ void *ptr_all[8][1024];
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    size_t align = SLAB_PAGE >> 1;
+    size_t align = 1 << 4;
     void **ptr = ptr_all[cpu_current()];
-    for(int i = 0; i < 4; i++){
+    /*for(int i = 0; i < 4; i++){
             ptr[i] = pmm->alloc(align);
             printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             if(ptr[i] == NULL){
@@ -24,10 +24,10 @@ static void os_run() {
           }
           pmm->free(ptr[i]);
           printf("pmm free %x success!, ptr = %x\n", align, ptr[i]);
-        }
+      }*/
 
     
-    /*while(align < (1024 * KiB)){
+    while(align < (1024 * KiB)){
         memset(ptr, 0, 1024);
         int i = 0;
         for(i = 0; i < 512; i++){
@@ -60,7 +60,7 @@ static void os_run() {
         }
         align = tem;
         align = align << 1;
-    }*/
+    }
    //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //    putch(*s == '*' ? '0' + cpu_current() : *s);
     //}
