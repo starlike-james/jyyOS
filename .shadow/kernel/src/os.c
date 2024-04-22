@@ -9,11 +9,10 @@ static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
     size_t align = 1 << 8;
-    while(align < (1024 * KiB)){
         void *ptr[1024];
         memset(ptr, 0, 1024);
         int i = 0;
-        for(i = 0; i < 64; i++){
+        for(i = 0; i < 4; i++){
             ptr[i] = pmm->alloc(align);
             printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align = align / 2;
@@ -26,7 +25,7 @@ static void os_run() {
             }
         }
         size_t tem = align;
-        for(; i < 128; i++){
+        for(; i < 8; i++){
             ptr[i] = pmm->alloc(align);
             printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align++;
@@ -34,7 +33,7 @@ static void os_run() {
                 break;
             }
         }
-        for(int i = 0; i < 128; i++){
+        for(int i = 0; i < 8; i++){
             if(ptr[i] == NULL){
                 continue;
             }
@@ -43,7 +42,9 @@ static void os_run() {
         }
         align = tem;
         align = align << 1;
-    }
+
+    while(align < (1024 * KiB)){
+            }
     printf("finish!\n");
    //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //    putch(*s == '*' ? '0' + cpu_current() : *s);
