@@ -8,26 +8,33 @@ static void os_init() {
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    size_t align = 4 * SLAB_PAGE;
-    for(int i = 0; i < 64; i++){
-        void *ptr = pmm->alloc(align);
-        printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
-        align = SLAB_PAGE;
-        ptr = pmm->alloc(align);
-        printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
-        align = 4 * SLAB_PAGE;
-    }
+    size_t align = 1 << 8;
     while(align < (1024 * KiB)){
-        
-        /*size_t tem = align;
-        for(int i = 0; i < 1024; i++){
+        void *ptr[1024];
+        int i = 0;
+        for(i = 0; i < 64; i++){
+            ptr[i] = pmm->alloc(align);
+            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
+            align = SLAB_PAGE;
+            i++;
+            ptr[i] = pmm->alloc(align);
+            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
+            align = 4 * SLAB_PAGE;
+        }
+        size_t tem = align;
+        for(; i < 128; i++){
             void *ptr = pmm->alloc(align);
             printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
-            pmm->free(ptr);
-            printf("pmm free %x success!, ptr = %x\n", align, ptr);
             align++;
         }
-        align = tem;*/
+        for(int i = 0; i < 128; i++){
+            if(ptr[i] == NULL){
+                continue;
+            }
+            pmm->free(ptr[i]);
+            printf("pmm free %x success!, ptr = %x\n", align, ptr);
+        }
+        align = tem;
         align = align << 1;
     }
     printf("finish!\n");
