@@ -8,7 +8,7 @@ static void os_init() {
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    size_t align = 1 << 13;
+    size_t align = SLAB_PAGE;
     for(int i = 0; i < 64; i++){
         void *ptr = pmm->alloc(align);
         printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
