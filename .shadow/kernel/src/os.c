@@ -11,9 +11,9 @@ static void os_run() {
     size_t align = 1;
     while(align < (1024 * KiB)){
         void *ptr = pmm->alloc(align);
-        printf("pmm alloc %x success!\n, ptr = %x\n", align, ptr);
+        printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
         pmm->free(ptr);
-        printf("pmm free %x success!\n, ptr = %x\n", align, ptr); 
+        printf("pmm free %x success!, ptr = %x\n", align, ptr); 
         align = align << 1;
     }
    //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
