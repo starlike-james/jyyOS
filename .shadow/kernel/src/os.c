@@ -10,10 +10,21 @@ static void os_run() {
     printf("Hello World from CPU #%d\n", cpu_current());
     size_t align = 1;
     while(align < (1024 * KiB)){
-        void *ptr = pmm->alloc(align);
-        printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
-        pmm->free(ptr);
-        printf("pmm free %x success!, ptr = %x\n", align, ptr); 
+        for(int i = 0; i < 1024; i++){
+            void *ptr = pmm->alloc(align);
+            printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
+            pmm->free(ptr);
+            printf("pmm free %x success!, ptr = %x\n", align, ptr);
+        }
+        size_t tem = align;
+        for(int i = 0; i < 1024; i++){
+            void *ptr = pmm->alloc(align);
+            printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
+            pmm->free(ptr);
+            printf("pmm free %x success!, ptr = %x\n", align, ptr);
+            align++;
+        }
+        align = tem;
         align = align << 1;
     }
    //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
