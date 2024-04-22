@@ -144,8 +144,8 @@ void central_free(void *ptr, bool slab){
         // big memory's header is a SLAB_PAGE before the ptr_addr
         header = (block_t*)((uintptr_t)ptr - SLAB_PAGE);
         assert((header->size & SLAB_MASK) == 0 && header->size >= SLAB_PAGE);
-        assert(header->next == NULL);
         assert(header->magic == BIG_MEM);
+        assert(header->next == NULL);
         
         size_t align = align_up(header->size);
         assert(((uintptr_t)ptr & (align - 1)) == 0); 
