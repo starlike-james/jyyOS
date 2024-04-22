@@ -9,13 +9,14 @@ static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
     size_t align = 1024;
+    for(int i = 0; i < 64; i++){
+        void *ptr = pmm->alloc(align);
+        printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
+        pmm->free(ptr);
+        printf("pmm free %x success!, ptr = %x\n", align, ptr);
+    }
     while(align < (1024 * KiB)){
-        for(int i = 0; i < 1; i++){
-            void *ptr = pmm->alloc(align);
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
-            pmm->free(ptr);
-            printf("pmm free %x success!, ptr = %x\n", align, ptr);
-        }
+        
         /*size_t tem = align;
         for(int i = 0; i < 1024; i++){
             void *ptr = pmm->alloc(align);
