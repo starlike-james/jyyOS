@@ -7,7 +7,7 @@ static void os_init() {
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    pmm->alloc(1);
+    pmm->alloc(2);
     printf("pmm alloc success!");
     //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //    putch(*s == '*' ? '0' + cpu_current() : *s);
