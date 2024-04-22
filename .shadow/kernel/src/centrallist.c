@@ -168,7 +168,7 @@ void central_free(void *ptr, bool slab){
         prev = cur;
         cur = cur->next;
     }
-    printf("free: ptr = %x cur = %x prev = %x\n", (uintptr_t)ptr, (uintptr_t)cur, (uintptr_t)prev);
+    //printf("free: ptr = %x cur = %x prev = %x\n", (uintptr_t)ptr, (uintptr_t)cur, (uintptr_t)prev);
 
     if(prev == NULL){
         central.head = header;

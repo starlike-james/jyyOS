@@ -8,16 +8,12 @@ static void os_init() {
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    size_t align = SLAB_PAGE;
-    void *ptr = pmm->alloc(align);
-    printf("pmm alloc %x success!\n", align);
-    pmm->free(ptr);
-    printf("pmm free %x success!\n", align); 
+    size_t align = 1;
     while(align < (1024 * KiB)){
         void *ptr = pmm->alloc(align);
-        printf("pmm alloc %x success!\n", align);
+        printf("pmm alloc %x success!\n, ptr = %x\n", align, ptr);
         pmm->free(ptr);
-        printf("pmm free %x success!\n", align); 
+        printf("pmm free %x success!\n, ptr = %x\n", align, ptr); 
         align = align << 1;
     }
    //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
