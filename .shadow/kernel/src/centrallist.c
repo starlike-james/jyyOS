@@ -54,6 +54,10 @@ void *central_allocate(size_t size, bool slab){
                new->size = cur->size - SLAB_PAGE;
                new->next = cur->next;
                cur->next = new;
+               if(new->magic == SLAB_MEM || new->magic == BIG_MEM){
+                    printf("magic = %x\n", new->magic);
+                    assert(0);
+                }
                assert(new->magic != SLAB_MEM && new->magic != BIG_MEM);
                 
                new->magic = FREE_MEM;
