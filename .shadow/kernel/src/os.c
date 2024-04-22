@@ -11,6 +11,7 @@ static void os_run() {
     size_t align = 1 << 8;
     while(align < (1024 * KiB)){
         void *ptr[1024];
+        memset(ptr, 0, 1024);
         int i = 0;
         for(i = 0; i < 64; i++){
             ptr[i] = pmm->alloc(align);
