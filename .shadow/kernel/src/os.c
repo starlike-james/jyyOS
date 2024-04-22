@@ -12,7 +12,8 @@ static void os_run() {
     for(int i = 0; i < 64; i++){
         void *ptr = pmm->alloc(align);
         printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
-        ptr = pmm->alloc(align + 1);
+        align = align + 1;
+        ptr = pmm->alloc(align);
         printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
     }
     while(align < (1024 * KiB)){
