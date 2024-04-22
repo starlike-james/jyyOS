@@ -61,7 +61,7 @@ void cpuslablist_init(){
     for(int i = 0; i <= 7; i++){
         cpuslablist[i].lk = spin_init();
         size_t size = 16;
-        for(int j = 0; j <= 10; j++){
+        for(int j = 0; j <= 11; j++){
             slablist_t* slablist = &cpuslablist[i].slablist[j];
             slablist->lk = spin_init();
             slablist->size = size;
