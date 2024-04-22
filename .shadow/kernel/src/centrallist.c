@@ -169,7 +169,6 @@ void central_free(void *ptr, bool slab){
         cur = cur->next;
     }
     printf("free: ptr = %x cur = %x prev = %x\n", (uintptr_t)ptr, (uintptr_t)cur, (uintptr_t)prev);
-    assert(cur->next == NULL);
 
     if(prev == NULL){
         central.head = header;
@@ -183,10 +182,10 @@ void central_free(void *ptr, bool slab){
     header->next = cur;
 
     if(header->next != NULL){
-        if(cur->next->magic != FREE_MEM){
+        if(header->next->magic != FREE_MEM){
             printf("%x size = %d\n",cur->next->magic, header->size);
         }
-        assert(cur->next->magic == FREE_MEM);
+        assert(header->next->magic == FREE_MEM);
         assert((uintptr_t)header < (uintptr_t)cur && ((uintptr_t)header + header->size) <= (uintptr_t)(header->next));
     }
     
