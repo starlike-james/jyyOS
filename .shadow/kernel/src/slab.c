@@ -137,6 +137,9 @@ void slab_free(void *ptr){
     uintptr_t addr = (uintptr_t)ptr;
     assert((addr & SLAB_MASK) != 0);
     block_t *header = (block_t *)(addr & (~SLAB_MASK)); 
+    if(header->magic != SLAB_MEM){
+        printf("ptr = %x magic = %x\n", ptr, header->magic);
+    }
     assert(header->magic == SLAB_MEM);
     assert(header->size == SLAB_PAGE);
     assert(header->next == NULL);
