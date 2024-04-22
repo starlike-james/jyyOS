@@ -7,7 +7,7 @@ static void os_init() {
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    void *ptr = pmm->alloc(2);
+    void *ptr = pmm->alloc(1024);
     printf("pmm alloc success!\n");
     pmm->free(ptr);
     printf("pmm free success!\n");
