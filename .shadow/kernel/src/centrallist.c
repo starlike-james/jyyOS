@@ -178,6 +178,7 @@ void central_free(void *ptr, bool slab){
     }
 
     header->next = cur;
+
     if(header->next != NULL){
         if(cur->next->magic != FREE_MEM){
             printf("%x size = %d\n",cur->next->magic, header->size);
