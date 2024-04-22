@@ -79,7 +79,7 @@ void *central_allocate(size_t size, bool slab){
             }
 
             uintptr_t ptr = ROUNDUP((uintptr_t)cur + SLAB_PAGE, align);
-            printf("ptr = %x cur = %x align = %x\n", (uintptr_t)ptr, (uintptr_t)cur, align);
+            printf("alloc: ptr = %x cur = %x align = %x\n", (uintptr_t)ptr, (uintptr_t)cur, align);
             //uintptr_t alloc_size = ROUNDUP(size, SLAB_PAGE); 
             if((uintptr_t)cur + cur->size < ptr + alloc_size){
                 continue;
@@ -168,6 +168,7 @@ void central_free(void *ptr, bool slab){
         prev = cur;
         cur = cur->next;
     }
+    printf("free: ptr = %x cur = %x prev = %x\n", (uintptr_t)ptr, (uintptr_t)cur, (uintptr_t)prev);
 
     if(prev == NULL){
         central.head = header;
