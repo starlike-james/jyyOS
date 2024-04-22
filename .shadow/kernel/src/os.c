@@ -27,6 +27,7 @@ static void os_run() {
         align = tem;
         align = align << 1;
     }
+    printf("finish!\n");
    //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //    putch(*s == '*' ? '0' + cpu_current() : *s);
     //}
