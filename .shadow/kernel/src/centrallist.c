@@ -5,7 +5,7 @@
 central_list_t central;
 
 static size_t align_up(size_t s){
-    size_t align = 0;
+    size_t align = 1;
     while(align < s){
         align = align << 1;
     }

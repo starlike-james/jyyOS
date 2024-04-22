@@ -5,8 +5,8 @@
 
 typedef struct __block_t{
     size_t size;
-    uint32_t magic;
     struct __block_t* next; 
+    uint32_t magic;
 }block_t;
 
 
