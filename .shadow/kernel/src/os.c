@@ -1,4 +1,5 @@
 #include <common.h>
+#include <macro.h>
 
 static void os_init() {
     pmm->init();
@@ -7,11 +8,14 @@ static void os_init() {
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    void *ptr = pmm->alloc(1024);
-    printf("pmm alloc success!\n");
-    pmm->free(ptr);
-    printf("pmm free success!\n");
-    //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
+    size_t align = 1;
+    while(align < (1024 * KiB)){
+        void *ptr = pmm->alloc(align);
+        printf("pmm alloc %llu success!\n", align);
+        pmm->free(ptr);
+        printf("pmm free %llu success!\n", align); 
+    }
+   //for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //    putch(*s == '*' ? '0' + cpu_current() : *s);
     //}
     while (1) ;
