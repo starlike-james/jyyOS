@@ -8,7 +8,7 @@ static void os_init() {
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    size_t align = (1 << 13) + 0x3ff;
+    size_t align = (1 << 13);
     while(align < (1024 * KiB)){
         for(int i = 0; i < 1024; i++){
             void *ptr = pmm->alloc(align);
