@@ -100,6 +100,10 @@ void *slab_allocate(size_t size){
         }
     } 
 
+    if(slab == NULL){
+        return NULL;
+    }
+
 
     //spin_lock(&slab->lk);
     assert(slab->free_count > 0);
