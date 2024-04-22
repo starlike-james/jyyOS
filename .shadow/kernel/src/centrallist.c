@@ -146,7 +146,7 @@ void central_free(void *ptr, bool slab){
         assert((header->size & SLAB_MASK) == 0 && header->size >= SLAB_PAGE);
 
         if(header->magic != BIG_MEM){
-            printf("magic = %x\n", header->magic);
+            printf("ptr = %x size = %x magic = %x\n", ptr, header->size, header->magic);
         }
         assert(header->magic == BIG_MEM);
         assert(header->next == NULL);
