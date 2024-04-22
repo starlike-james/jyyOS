@@ -81,6 +81,7 @@ void *slab_allocate(size_t size){
     }
     slablist_t *slablist = &cpuslablist[cpu_index].slablist[order - 4]; 
 
+    printf("%d\n", slablist->size);
     assert(slablist->size == align);
 
     spin_lock(&slablist->lk);
