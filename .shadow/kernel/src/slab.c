@@ -78,6 +78,7 @@ void *slab_allocate(size_t size){
     int order = get_order(size);
     if(order < 4){
         order = 4;
+        align = 16;
     }
     slablist_t *slablist = &cpuslablist[cpu_index].slablist[order - 4]; 
 
