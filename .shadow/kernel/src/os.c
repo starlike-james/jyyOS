@@ -8,7 +8,7 @@ static void os_init() {
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    size_t align = 1034;
+    size_t align = 1024;
     while(align < (1024 * KiB)){
         for(int i = 0; i < 64; i++){
             void *ptr = pmm->alloc(align);
@@ -16,7 +16,7 @@ static void os_run() {
             pmm->free(ptr);
             printf("pmm free %x success!, ptr = %x\n", align, ptr);
         }
-        size_t tem = align;
+        /*size_t tem = align;
         for(int i = 0; i < 1024; i++){
             void *ptr = pmm->alloc(align);
             printf("pmm alloc %x success!, ptr = %x\n", align, ptr);
@@ -24,7 +24,7 @@ static void os_run() {
             printf("pmm free %x success!, ptr = %x\n", align, ptr);
             align++;
         }
-        align = tem;
+        align = tem;*/
         align = align << 1;
     }
     printf("finish!\n");
