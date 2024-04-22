@@ -2,18 +2,22 @@
 #include <spinlock.h>
 #include <centrallist.h>
 #include <macro.h>
-
+#include <slab.h>
 
 static void *kalloc(size_t size) {
     // You can add more .c files to the repo.
     if (size > 16 * MiB){
         return NULL;
     }
+    void *ptr;
     if (size > 32 * KiB){
-        central_allocate(size, false);
+        ptr = central_allocate(size, false);
+    }
+    else{
+        ptr = slab_allocate(size);
     }
     
-    return NULL;
+    return ptr;
 }
 
 static void kfree(void *ptr) {
@@ -21,7 +25,7 @@ static void kfree(void *ptr) {
     if((addr & SLAB_MASK) == 0){
         central_free(ptr, false);
     }else{
-        ;
+        slab_free(ptr);
     }
 }
 
@@ -32,6 +36,7 @@ static void pmm_init() {
     );
     
     central_init((uintptr_t)heap.start, (uintptr_t)heap.end);
+    cpuslablist_init();
     
     printf(
         "Got %d MiB heap: [%p, %p)\n",

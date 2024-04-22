@@ -49,6 +49,7 @@ static slab_t *add_new_slab(slablist_t* slablist, size_t size){
 
     void *ptr = central_allocate(SLAB_PAGE, true);
     slab_t *slab = slab_init(ptr, size);
+    slab->slablist = slablist;
     slab->next = slablist->head;
     slablist->head = slab;
 
@@ -97,6 +98,7 @@ void *slab_allocate(size_t size){
     assert(slab->free_count > 0);
     assert(slab->magic == SLAB_MEM);
     assert(slab->size == align);
+    assert(slab->slablist == slablist);
 
     block_t *header = (block_t *)((uintptr_t)slab & (~SLAB_MASK));
     
@@ -126,13 +128,26 @@ void slab_free(void *ptr){
     
     slab_t *slab = (slab_t *)((uintptr_t)header + sizeof(block_t));
     assert(slab->magic == SLAB_MEM);
+
+    slablist_t *slablist = slab->slablist;
+    spin_lock(&slablist->lk);
     
     slab->ref_count--;
     if(slab->free_count == 0 && slab->ref_count == 0){
-
+        slab_t *prev = slablist->head;
+        if(prev == slab){
+            slablist->head = slab->next;
+        }
+        else{
+            while(prev->next != NULL && prev->next != slab){
+                prev = prev->next;
+            }
+            assert(prev->next == slab);
+            prev->next = slab->next;
+        }
         central_free(header, true);
     }
 
-
+    spin_unlock(&slablist->lk);
 }
 
