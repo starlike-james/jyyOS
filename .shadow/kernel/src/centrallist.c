@@ -102,6 +102,7 @@ void *central_allocate(size_t size, bool slab){
                 cur->next = new;
                 if(new->magic == SLAB_MEM || new->magic == BIG_MEM){
                     printf("magic = %x\n", new->magic);
+                    assert(0);
                 }
                 assert(new->magic != SLAB_MEM && new->magic != BIG_MEM);
                 new->magic = FREE_MEM;
