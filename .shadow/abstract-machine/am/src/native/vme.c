@@ -91,13 +91,13 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   VMHead *vm_head = as->ptr;
   assert(vm_head != NULL);
   char buf[32];
-  snprintf(buf, 32, "%x", va);
+  snprintf(buf, 32, "%p", va);
   ENTRY item = { .key = buf };
   ENTRY *item_find;
   hsearch_r(item, FIND, &item_find, &vm_head->hash);
   if (item_find == NULL) {
     pp = pgalloc(__am_pgsize); // this will waste memory, any better idea?
-    snprintf(pp->key, 32, "%x", va);
+    snprintf(pp->key, 32, "%p", va);
     item.key = pp->key;
     item.data = pp;
     int ret = hsearch_r(item, ENTER, &item_find, &vm_head->hash);
