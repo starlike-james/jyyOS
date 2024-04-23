@@ -27,16 +27,22 @@ static void os_run() {
       }*/
 
     
-    while(align < (1024 * KiB)){
+    while(align < (4096 * KiB)){
         memset(ptr, 0, 1024 * sizeof(void *));
         int i = 0;
         for(i = 0; i < 512; i++){
             ptr[i] = pmm->alloc(align);
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
+            if(ptr[i] != NULL){
+                memset(ptr[i], 100, align);     
+            }
+            //printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align = align / 2;
             i++;
             ptr[i] = pmm->alloc(align);
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
+            if(ptr[i] != NULL){
+                memset(ptr[i], 100, align);
+            }
+            //printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align = align * 2;
             if(ptr[i] == NULL){
                 break;
@@ -45,7 +51,10 @@ static void os_run() {
         size_t tem = align;
         for(; i < 1024; i++){
             ptr[i] = pmm->alloc(align);
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
+            if(ptr[i] != NULL){
+                memset(ptr[i], 100, align);
+            }
+            //printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align++;
             if(ptr[i] == NULL){
                 break;
@@ -56,7 +65,7 @@ static void os_run() {
                 continue;
             }
             pmm->free(ptr[i]);
-            printf("pmm free %x success!, ptr = %x\n", align, ptr[i]);
+            //printf("pmm free %x success!, ptr = %x\n", align, ptr[i]);
         }
         align = tem;
         align = align << 1;
