@@ -32,12 +32,16 @@ static void os_run() {
         int i = 0;
         for(i = 0; i < 512; i++){
             ptr[i] = pmm->alloc(align);
-            memset(ptr[i], 100, align);
+            if(ptr[i] != NULL){
+                memset(ptr[i], 100, align);     
+            }
             //printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align = align / 2;
             i++;
             ptr[i] = pmm->alloc(align);
-            memset(ptr[i], 100, align);
+            if(ptr[i] != NULL){
+                memset(ptr[i], 100, align);
+            }
             //printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align = align * 2;
             if(ptr[i] == NULL){
@@ -47,7 +51,9 @@ static void os_run() {
         size_t tem = align;
         for(; i < 1024; i++){
             ptr[i] = pmm->alloc(align);
-            memset(ptr[i], 100, align);
+            if(ptr[i] != NULL){
+                memset(ptr[i], 100, align);
+            }
             //printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align++;
             if(ptr[i] == NULL){
