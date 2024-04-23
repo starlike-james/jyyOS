@@ -1,29 +1,32 @@
 #include <common.h>
 #include <spinlock.h>
-
-#define MiB * (1024LL * 1024)
-
-static size_t align_up(size_t s){
-    size_t align = 0;
-    while(align < s){
-        align = align << 1;
-    }
-    return align;
-}
+#include <centrallist.h>
+#include <macro.h>
+#include <slab.h>
 
 static void *kalloc(size_t size) {
     // You can add more .c files to the repo.
-    if (size > 16 MiB){
+    if (size > 16 * MiB){
         return NULL;
     }
-    size_t align = align_up(size);
-    align = align + 1;
-    return NULL;
+    void *ptr;
+    if (size > 32 * KiB){
+        ptr = central_allocate(size, false);
+    }
+    else{
+        ptr = slab_allocate(size);
+    }
+    
+    return ptr;
 }
 
 static void kfree(void *ptr) {
-    // TODO
-    // You can add more .c files to the repo.
+    uintptr_t addr = (uintptr_t) ptr;
+    if((addr & SLAB_MASK) == 0){
+        central_free(ptr, false);
+    }else{
+        slab_free(ptr);
+    }
 }
 
 static void pmm_init() {
@@ -31,7 +34,10 @@ static void pmm_init() {
         (uintptr_t)heap.end
         - (uintptr_t)heap.start
     );
-
+    
+    central_init((uintptr_t)heap.start, (uintptr_t)heap.end);
+    cpuslablist_init();
+    
     printf(
         "Got %d MiB heap: [%p, %p)\n",
         pmsize >> 20, heap.start, heap.end

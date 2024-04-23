@@ -48,7 +48,7 @@ static void spin_lock(spinlock_t *lk) {
 
     // This is a deadlock.
     if (holding(lk)) {
-        panic("have acquire the lock yet!");
+        panic("have acquired the same lock before!");
     }
 
     // This our main body of spin lock.
@@ -62,7 +62,7 @@ static void spin_lock(spinlock_t *lk) {
 
 static void spin_unlock(spinlock_t *lk) {
     if (!holding(lk)) {
-        panic("have released the lock yet!");
+        panic("have released the same lock before!");
     }
 
     lk->lcpu = NULL;

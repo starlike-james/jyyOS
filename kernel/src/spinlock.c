@@ -1,15 +1,11 @@
 #include <am.h>
 #include <spinlock.h>
+#include <klib-macros.h>
 
 // This is a ported version of spin-lock
 // from xv6-riscv to AbstractMachine:
 // https://github.com/mit-pdos/xv6-riscv
 
-#define panic(...) \
-    do { \
-        printf("Panic: " __VA_ARGS__); \
-        halt(1); \
-    } while (0)
 
 struct lcpu lcpus[16];
 
@@ -23,7 +19,7 @@ void spin_lock(spinlock_t *lk) {
 
     // This is a deadlock.
     if (holding(lk)) {
-        panic("acquire %s", lk->name);
+        panic("have acquired the same lock before!");
     }
 
     // This our main body of spin lock.
@@ -37,7 +33,7 @@ void spin_lock(spinlock_t *lk) {
 
 void spin_unlock(spinlock_t *lk) {
     if (!holding(lk)) {
-        panic("release %s", lk->name);
+        panic("have released the same lock before!");
     }
 
     lk->lcpu = NULL;
