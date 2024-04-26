@@ -25,7 +25,7 @@ static void os_run() {
       }*/
 
     while (align < (4096 * KiB)) {
-        for (int j = 0; j < 10; j++) {
+        for (int j = 0; j < 1; j++) {
 
             memset(ptr, 0, 1024 * sizeof(void *));
             int i = 0;
