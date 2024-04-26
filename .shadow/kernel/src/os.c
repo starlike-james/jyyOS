@@ -71,8 +71,7 @@ static void os_run() {
     //     putch(*s == '*' ? '0' + cpu_current() : *s);
     // }
     printf("finish!\n");
-    while (1)
-        ;
+    while(1);
 }
 
 MODULE_DEF(os) = {
