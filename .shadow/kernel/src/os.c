@@ -25,7 +25,7 @@ static void os_run() {
       }*/
 
     while (align < (4096 * KiB)) {
-        for (int j = 0; j < 100; j++) {
+        for (int j = 0; j < 10; j++) {
 
             memset(ptr, 0, 1024 * sizeof(void *));
             int i = 0;
@@ -67,8 +67,8 @@ static void os_run() {
                 // printf("pmm free %x success!, ptr = %x\n", align, ptr[i]);
             }
             align = tem;
-            align = align << 1;
         }
+        align = align << 1;
     }
     // for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //     putch(*s == '*' ? '0' + cpu_current() : *s);
