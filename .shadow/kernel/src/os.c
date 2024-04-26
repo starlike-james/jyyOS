@@ -7,7 +7,7 @@ void *ptr_all[8][1024];
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    size_t align = 1;
+    size_t align = 2;
     void **ptr = ptr_all[cpu_current()];
     /*for(int i = 0; i < 4; i++){
             ptr[i] = pmm->alloc(align);
@@ -32,14 +32,14 @@ static void os_run() {
             if (ptr[i] != NULL) {
                 memset(ptr[i], 100, align);
             }
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
+            // printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align = align / 2;
             i++;
             ptr[i] = pmm->alloc(align);
             if (ptr[i] != NULL) {
                 memset(ptr[i], 100, align);
             }
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
+            // printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align = align * 2;
             if (ptr[i] == NULL) {
                 break;
@@ -51,7 +51,7 @@ static void os_run() {
             if (ptr[i] != NULL) {
                 memset(ptr[i], 100, align);
             }
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
+            //printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
             align++;
             if (ptr[i] == NULL) {
                 break;
