@@ -7,7 +7,7 @@ void *ptr_all[8][1024];
 static void os_run() {
 
     printf("Hello World from CPU #%d\n", cpu_current());
-    size_t align = 1;
+    size_t align = 1 << 4;
     void **ptr = ptr_all[cpu_current()];
     /*for(int i = 0; i < 4; i++){
             ptr[i] = pmm->alloc(align);
