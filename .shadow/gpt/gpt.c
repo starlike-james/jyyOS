@@ -91,6 +91,7 @@ mutex_t lk = MUTEX_INIT();
 sem_t task, done;
 bool finish = false;
 int nT = 4;
+//cond_t cv = COND_INIT();
 
 void T_compute(){
     while(1){
@@ -100,7 +101,7 @@ void T_compute(){
         }
         int o = 0;
         mutex_lock(&lk);
-        assert(go < gOC);
+        //assert(go < gOC);
         o = go;
         go++;
         mutex_unlock(&lk);
