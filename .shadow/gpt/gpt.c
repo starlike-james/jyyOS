@@ -150,10 +150,10 @@ void matmul_forward(float* out,
             out_bt = out + b * T * OC + t * OC;
             inp_bt = inp + b * T * C + t * C;
             gid = 0;
-            for(int o = 0; o < 4; o++){
+            for(int o = 0; o < nT; o++){
                 V(&task);
             }
-            for(int o = 0; o < 4; o++){
+            for(int o = 0; o < nT; o++){
                 P(&done);
             }
             assert(gid == nT);
