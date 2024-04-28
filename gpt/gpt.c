@@ -8,6 +8,7 @@
 #include <time.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #include "thread.h"
 #include "thread-sync.h"
@@ -83,6 +84,56 @@ void layernorm_forward(float* out, float* mean, float* rstd,
     }
 }
 
+int gC = 0, gOC = 0;
+float *gbias = NULL, *gweight = NULL, *inp_bt = NULL, *out_bt = NULL; 
+int gid = 0;
+mutex_t lk = MUTEX_INIT();
+sem_t task, done;
+bool finish = false;
+int nT = 4;
+//cond_t cv = COND_INIT();
+
+void T_compute(){
+    while(1){
+        P(&task);
+
+        if(finish == true){
+            break;
+        }
+        int id = 0;
+
+        mutex_lock(&lk);
+
+        assert(gid < nT);
+        id = gid;
+        gid++;
+
+        mutex_unlock(&lk);
+
+        for(int o = 0; o < gOC; o++){
+            if(o % nT != id){
+                continue;
+            }
+            float val = (gbias != NULL) ? gbias[o] : 0.0f;
+            float* wrow = gweight + o * gC;
+            for (int i = 0; i < gC; i++) {
+                val += inp_bt[i] * wrow[i];
+            }
+            out_bt[o] = val;
+        }
+
+        V(&done);
+    }
+}
+
+void T_init(){
+    for(int i = 0; i < nT; i++){
+        create(T_compute);
+    }
+    SEM_INIT(&task, 0);
+    SEM_INIT(&done, 0);
+}
+
 void matmul_forward(float* out,
                     float* inp, float* weight, float* bias,
                     int B, int T, int C, int OC) {
@@ -90,11 +141,23 @@ void matmul_forward(float* out,
     // OC is short for "output channels"
     // inp is (B,T,C), weight is (OC, C), bias is (OC)
     // out will be (B,T,OC)
+    gC = C;
+    gOC = OC;
+    gbias = bias;
+    gweight = weight;
     for (int b = 0; b < B; b++) {
         for (int t = 0; t < T; t++) {
-            float* out_bt = out + b * T * OC + t * OC;
-            float* inp_bt = inp + b * T * C + t * C;
-            for (int o = 0; o < OC; o++) {
+            out_bt = out + b * T * OC + t * OC;
+            inp_bt = inp + b * T * C + t * C;
+            gid = 0;
+            for(int o = 0; o < nT; o++){
+                V(&task);
+            }
+            for(int o = 0; o < nT; o++){
+                P(&done);
+            }
+            assert(gid == nT);
+            /*for (int o = 0; o < OC; o++) {
                 float val = (bias != NULL) ? bias[o] : 0.0f;
                 float* wrow = weight + o*C;
                 for (int i = 0; i < C; i++) {
@@ -102,6 +165,7 @@ void matmul_forward(float* out,
                 }
                 out_bt[o] = val;
             }
+            */
         }
     }
 }
@@ -566,6 +630,9 @@ int main(int argc, char** argv) {
     GPT2 model;
     gpt2_build_from_checkpoint(&model, "gpt2_124M.bin");
     const int n = 10;  // Token limit.
+    
+    T_init();
+
 
     if (argc == 1) {
         printf("Provide at least one token.\n");
@@ -598,5 +665,10 @@ int main(int argc, char** argv) {
 
     gpt2_free(&model);
 
+    finish = true;
+    for(int i = 0; i < nT; i++){
+        V(&task);
+    }
+    join();
     return 0;
 }
