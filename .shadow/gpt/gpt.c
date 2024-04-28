@@ -106,8 +106,15 @@ void T_compute(){
         }
         out_bt[o] = val;
         V(&done);
-
     }
+}
+
+void T_init(){
+    for(int i = 0; i < 4; i++){
+        create(T_compute);
+    }
+    SEM_INIT(&task, 0);
+    SEM_INIT(&done, 0);
 }
 
 void matmul_forward(float* out,
@@ -607,8 +614,8 @@ int main(int argc, char** argv) {
     gpt2_build_from_checkpoint(&model, "gpt2_124M.bin");
     const int n = 10;  // Token limit.
     
-    SEM_INIT(&task, 0);
-    SEM_INIT(&done, 0);
+    T_init();
+
 
     if (argc == 1) {
         printf("Provide at least one token.\n");
