@@ -90,21 +90,26 @@ int gid = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
 bool finish = false;
-int nT = 4;
+int nT = 8;
 //cond_t cv = COND_INIT();
 
 void T_compute(){
     while(1){
         P(&task);
+
         if(finish == true){
             break;
         }
         int id = 0;
+
         mutex_lock(&lk);
+
         assert(gid < nT);
         id = gid;
         gid++;
+
         mutex_unlock(&lk);
+
         for(int o = 0; o < gOC; o++){
             if(o % nT != id){
                 continue;
@@ -116,6 +121,7 @@ void T_compute(){
             }
             out_bt[o] = val;
         }
+
         V(&done);
     }
 }
