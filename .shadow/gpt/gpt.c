@@ -86,7 +86,7 @@ void layernorm_forward(float* out, float* mean, float* rstd,
 
 int gC = 0, gOC = 0;
 float *gbias = NULL, *gweight = NULL, *inp_bt = NULL, *out_bt = NULL; 
-int go = 0;
+int gid = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
 bool finish = false;
@@ -99,19 +99,23 @@ void T_compute(){
         if(finish == true){
             break;
         }
-        int o = 0;
+        int id = 0;
         mutex_lock(&lk);
-        //assert(go < gOC);
-        o = go;
-        go++;
+        assert(gid < nT);
+        id = gid;
+        gid++;
         mutex_unlock(&lk);
-
-        float val = (gbias != NULL) ? gbias[o] : 0.0f;
-        float* wrow = gweight + o*gC;
-        for (int i = 0; i < gC; i++) {
-            val += inp_bt[i] * wrow[i];
+        for(int o = 0; o < gOC; o++){
+            if(o % nT != id){
+                continue;
+            }
+            float val = (gbias != NULL) ? gbias[o] : 0.0f;
+            float* wrow = gweight + o * gC;
+            for (int i = 0; i < gC; i++) {
+                val += inp_bt[i] * wrow[i];
+            }
+            out_bt[o] = val;
         }
-        out_bt[o] = val;
         V(&done);
     }
 }
@@ -139,14 +143,14 @@ void matmul_forward(float* out,
         for (int t = 0; t < T; t++) {
             out_bt = out + b * T * OC + t * OC;
             inp_bt = inp + b * T * C + t * C;
-            go = 0;
-            for(int o = 0; o < OC; o++){
+            gid = 0;
+            for(int o = 0; o < 4; o++){
                 V(&task);
             }
-            for(int o = 0; o < OC; o++){
+            for(int o = 0; o < 4; o++){
                 P(&done);
             }
-            assert(go == OC);
+            assert(gid == nT);
             /*for (int o = 0; o < OC; o++) {
                 float val = (bias != NULL) ? bias[o] : 0.0f;
                 float* wrow = weight + o*C;
