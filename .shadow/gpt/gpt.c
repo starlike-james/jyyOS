@@ -7,7 +7,6 @@
 #include <math.h>
 #include <time.h>
 #include <string.h>
-#include <stdbool.h>
 #include <unistd.h>
 
 #include "thread.h"
@@ -89,7 +88,7 @@ float *gbias = NULL, *gweight = NULL, *inp_bt = NULL, *out_bt = NULL;
 int go = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
-bool finish = false;
+int finish = 0;
 
 void T_compute(){
     while(!finish){
@@ -650,7 +649,7 @@ int main(int argc, char** argv) {
 
     gpt2_free(&model);
     
-    finish = true;
+    finish = 1;
     join();
 
     return 0;
