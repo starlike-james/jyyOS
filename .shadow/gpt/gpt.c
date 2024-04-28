@@ -88,10 +88,10 @@ float *gbias = NULL, *gweight = NULL, *inp_bt = NULL, *out_bt = NULL;
 int go = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
-int finish = 0;
+
 
 void T_compute(){
-    while(!finish){
+    while(1){
         P(&task);
         int o = 0;
         mutex_lock(&lk);
@@ -648,9 +648,6 @@ int main(int argc, char** argv) {
     }
 
     gpt2_free(&model);
-    
-    finish = 1;
-    join();
 
     return 0;
 }
