@@ -89,7 +89,6 @@ int go = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
 
-
 void T_compute(){
     while(1){
         P(&task);
