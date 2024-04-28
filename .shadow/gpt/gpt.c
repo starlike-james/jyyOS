@@ -115,7 +115,7 @@ void T_compute(){
 }
 
 void T_init(){
-    for(int i = 0; i < 4; i++){
+    for(int i = 0; i < 8; i++){
         create(T_compute);
     }
     SEM_INIT(&task, 0);
