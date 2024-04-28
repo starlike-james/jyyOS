@@ -92,8 +92,11 @@ sem_t task, done;
 bool finish = false;
 
 void T_compute(){
-    while(!finish){
+    while(1){
         P(&task);
+        if(finish == true){
+            break;
+        }
         int o = 0;
         mutex_lock(&lk);
         assert(go < gOC);
@@ -649,8 +652,11 @@ int main(int argc, char** argv) {
     }
 
     gpt2_free(&model);
-    finish = true;
-    join();
 
+    finish = true;
+    for(int i = 0; i <= 3; i++){
+        V(&task);
+    }
+    join();
     return 0;
 }
