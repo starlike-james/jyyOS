@@ -90,6 +90,7 @@ int go = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
 bool finish = false;
+int nT = 8;
 
 void T_compute(){
     while(1){
@@ -115,7 +116,7 @@ void T_compute(){
 }
 
 void T_init(){
-    for(int i = 0; i < 8; i++){
+    for(int i = 0; i < nT; i++){
         create(T_compute);
     }
     SEM_INIT(&task, 0);
@@ -654,7 +655,7 @@ int main(int argc, char** argv) {
     gpt2_free(&model);
 
     finish = true;
-    for(int i = 0; i <= 3; i++){
+    for(int i = 0; i < nT; i++){
         V(&task);
     }
     join();
