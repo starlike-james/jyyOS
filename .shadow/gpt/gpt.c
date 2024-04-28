@@ -90,7 +90,7 @@ int go = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
 bool finish = false;
-int nT = 4;
+int nT = 2;
 
 void T_compute(){
     while(1){
