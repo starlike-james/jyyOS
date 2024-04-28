@@ -87,8 +87,8 @@ void layernorm_forward(float* out, float* mean, float* rstd,
 int gC = 0, gOC = 0;
 float *gbias = NULL, *gweight = NULL, *inp_bt = NULL, *out_bt = NULL; 
 int go = 0;
-//mutex_t lk = MUTEX_INIT();
-sem_t task, done, lk;
+mutex_t lk = MUTEX_INIT();
+sem_t task, done;
 bool finish = false;
 int nT = 4;
 
@@ -99,13 +99,11 @@ void T_compute(){
             break;
         }
         int o = 0;
-        //mutex_lock(&lk);
-        P(&lk);
+        mutex_lock(&lk);
         assert(go < gOC);
         o = go;
         go++;
-        V(&lk);
-        //mutex_unlock(&lk);
+        mutex_unlock(&lk);
 
         float val = (gbias != NULL) ? gbias[o] : 0.0f;
         float* wrow = gweight + o*gC;
@@ -123,7 +121,6 @@ void T_init(){
     }
     SEM_INIT(&task, 0);
     SEM_INIT(&done, 0);
-    SEM_INIT(&lk, 1);
 }
 
 void matmul_forward(float* out,
