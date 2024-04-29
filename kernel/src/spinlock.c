@@ -1,11 +1,10 @@
 #include <am.h>
-#include <spinlock.h>
 #include <klib-macros.h>
+#include <spinlock.h>
 
 // This is a ported version of spin-lock
 // from xv6-riscv to AbstractMachine:
 // https://github.com/mit-pdos/xv6-riscv
-
 
 struct lcpu lcpus[16];
 
@@ -45,10 +44,7 @@ void spin_unlock(spinlock_t *lk) {
 // Check whether this cpu is holding the lock.
 // Interrupts must be off.
 bool holding(spinlock_t *lk) {
-    return (
-        lk->status == LOCKED &&
-        lk->lcpu == &lcpus[cpu_current()]
-    );
+    return (lk->status == LOCKED && lk->lcpu == &lcpus[cpu_current()]);
 }
 
 // push_off/pop_off are like intr_off()/intr_on()
@@ -74,7 +70,7 @@ void pop_off(void) {
     if (ienabled()) {
         panic("pop_off - interruptible");
     }
-    
+
     if (c->noff < 1) {
         panic("pop_off");
     }
