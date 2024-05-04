@@ -62,8 +62,8 @@ static slab_t *add_new_slab(slablist_t *slablist, size_t size) {
 void cpuslablist_init() {
     for (int i = 0; i <= 7; i++) {
         cpuslablist[i].lk = spin_init();
-        size_t size = 16;
-        for (int j = 0; j <= 11; j++) {
+        size_t size = 1;
+        for (int j = 0; j <= 15; j++) {
             slablist_t *slablist = &cpuslablist[i].slablist[j];
             slablist->lk = spin_init();
             slablist->size = size;
@@ -78,11 +78,11 @@ void *slab_allocate(size_t size) {
     int cpu_index = cpu_current();
     size_t align = align_up(size);
     int order = get_order(size);
-    if (order < 4) {
-        order = 4;
-        align = 16;
-    }
-    slablist_t *slablist = &cpuslablist[cpu_index].slablist[order - 4];
+    // if (order < 4) {
+    //     order = 4;
+    //     align = 16;
+    // }
+    slablist_t *slablist = &cpuslablist[cpu_index].slablist[order];
 
     assert(slablist->size == align);
 
