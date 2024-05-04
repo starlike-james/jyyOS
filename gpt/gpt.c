@@ -8,7 +8,7 @@
 #include <time.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdbool.h>
+//#include <stdbool.h>
 
 #include "thread.h"
 #include "thread-sync.h"
@@ -89,7 +89,7 @@ float *gbias = NULL, *gweight = NULL, *inp_bt = NULL, *out_bt = NULL;
 int gid = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
-bool finish = false;
+int finish = 0;
 int nT = 4;
 //cond_t cv = COND_INIT();
 
@@ -97,7 +97,7 @@ void T_compute(){
     while(1){
         P(&task);
 
-        if(finish == true){
+        if(finish == 1){
             break;
         }
         int id = 0;
@@ -665,7 +665,7 @@ int main(int argc, char** argv) {
 
     gpt2_free(&model);
 
-    finish = true;
+    finish = 1;
     for(int i = 0; i < nT; i++){
         V(&task);
     }
