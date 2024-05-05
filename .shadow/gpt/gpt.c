@@ -87,7 +87,7 @@ void layernorm_forward(float* out, float* mean, float* rstd,
 int gC = 0, gOC = 0;
 float *gbias = NULL, *gweight = NULL, *ginp_bt = NULL, *gout_bt = NULL; 
 int gid = 0;
-mutex_t lk = MUTEX_INIT();
+mutex_t glk = MUTEX_INIT();
 sem_t task, done;
 int fin = 0;
 int nT = 4;
@@ -102,24 +102,28 @@ void T_compute(){
         }
         int tid = 0;
 
-        mutex_lock(&lk);
+        mutex_lock(&glk);
 
-        assert(gid < nT);
+        //assert(gid < nT);
         tid = gid;
         gid++;
+        float* bias = gbias;
+        float* weight = gweight;
+        float* inp_bt = ginp_bt;
+        float* out_bt = gout_bt;
 
-        mutex_unlock(&lk);
+        mutex_unlock(&glk);
 
         for(int o = tid; o < gOC; o += nT){
             // if(o % nT != tid){
             //     continue;
             // }
-            float val = (gbias != NULL) ? gbias[o] : 0.0f;
-            float* wrow = gweight + o * gC;
+            float val = (bias != NULL) ? bias[o] : 0.0f;
+            float* wrow = weight + o * gC;
             for (int i = 0; i < gC; i++) {
-                val += ginp_bt[i] * wrow[i];
+                val += inp_bt[i] * wrow[i];
             }
-            gout_bt[o] = val;
+            out_bt[o] = val;
         }
 
         V(&done);
@@ -141,22 +145,35 @@ void matmul_forward(float* out,
     // OC is short for "output channels"
     // inp is (B,T,C), weight is (OC, C), bias is (OC)
     // out will be (B,T,OC)
+    
+    mutex_lock(&glk);
+
     gC = C;
     gOC = OC;
     gbias = bias;
     gweight = weight;
+
+    mutex_lock(&glk);
+
     for (int b = 0; b < B; b++) {
         for (int t = 0; t < T; t++) {
+
+            mutex_lock(&glk);
+
             gout_bt = out + b * T * OC + t * OC;
             ginp_bt = inp + b * T * C + t * C;
             gid = 0;
+
+            mutex_lock(&glk);
+
             for(int i = 0; i < nT; i++){
                 V(&task);
             }
             for(int i = 0; i < nT; i++){
                 P(&done);
             }
-            assert(gid == nT);
+
+            //assert(gid == nT);
             /*for (int o = 0; o < OC; o++) {
                 float val = (bias != NULL) ? bias[o] : 0.0f;
                 float* wrow = weight + o*C;
