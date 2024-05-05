@@ -90,7 +90,7 @@ int gid = 0;
 mutex_t glk = MUTEX_INIT();
 sem_t task, done;
 int fin = 0;
-int nT = 8;
+int nT = 4;
 //cond_t cv = COND_INIT();
 
 void T_compute(){
