@@ -85,11 +85,11 @@ void layernorm_forward(float* out, float* mean, float* rstd,
 }
 
 int gC = 0, gOC = 0;
-float *gbias = NULL, *gweight = NULL, *inp_bt = NULL, *out_bt = NULL; 
+float *gbias = NULL, *gweight = NULL, *ginp_bt = NULL, *gout_bt = NULL; 
 int gid = 0;
 mutex_t lk = MUTEX_INIT();
 sem_t task, done;
-int finish = 0;
+int fin = 0;
 int nT = 4;
 //cond_t cv = COND_INIT();
 
@@ -97,7 +97,7 @@ void T_compute(){
     while(1){
         P(&task);
 
-        if(finish == 1){
+        if(fin == 1){
             break;
         }
         int id = 0;
@@ -117,9 +117,9 @@ void T_compute(){
             float val = (gbias != NULL) ? gbias[o] : 0.0f;
             float* wrow = gweight + o * gC;
             for (int i = 0; i < gC; i++) {
-                val += inp_bt[i] * wrow[i];
+                val += ginp_bt[i] * wrow[i];
             }
-            out_bt[o] = val;
+            gout_bt[o] = val;
         }
 
         V(&done);
@@ -147,8 +147,8 @@ void matmul_forward(float* out,
     gweight = weight;
     for (int b = 0; b < B; b++) {
         for (int t = 0; t < T; t++) {
-            out_bt = out + b * T * OC + t * OC;
-            inp_bt = inp + b * T * C + t * C;
+            gout_bt = out + b * T * OC + t * OC;
+            ginp_bt = inp + b * T * C + t * C;
             gid = 0;
             for(int o = 0; o < nT; o++){
                 V(&task);
@@ -665,7 +665,7 @@ int main(int argc, char** argv) {
 
     gpt2_free(&model);
 
-    finish = 1;
+    fin = 1;
     for(int i = 0; i < nT; i++){
         V(&task);
     }
