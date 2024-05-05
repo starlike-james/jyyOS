@@ -88,9 +88,10 @@ int gC = 0, gOC = 0;
 float *gbias = NULL, *gweight = NULL, *ginp_bt = NULL, *gout_bt = NULL; 
 int gid = 0;
 mutex_t glk = MUTEX_INIT();
+
 sem_t task, done;
 int fin = 0;
-int nT = 4;
+int nT = 1;
 //cond_t cv = COND_INIT();
 
 void T_compute(){
