@@ -100,18 +100,18 @@ void T_compute(){
         if(fin == 1){
             break;
         }
-        int id = 0;
+        int tid = 0;
 
         mutex_lock(&lk);
 
         assert(gid < nT);
-        id = gid;
+        tid = gid;
         gid++;
 
         mutex_unlock(&lk);
 
         for(int o = 0; o < gOC; o++){
-            if(o % nT != id){
+            if(o % nT != tid){
                 continue;
             }
             float val = (gbias != NULL) ? gbias[o] : 0.0f;
@@ -150,10 +150,10 @@ void matmul_forward(float* out,
             gout_bt = out + b * T * OC + t * OC;
             ginp_bt = inp + b * T * C + t * C;
             gid = 0;
-            for(int o = 0; o < nT; o++){
+            for(int i = 0; i < nT; i++){
                 V(&task);
             }
-            for(int o = 0; o < nT; o++){
+            for(int i = 0; i < nT; i++){
                 P(&done);
             }
             assert(gid == nT);
