@@ -153,7 +153,7 @@ void matmul_forward(float* out,
     gbias = bias;
     gweight = weight;
 
-    mutex_lock(&glk);
+    mutex_unlock(&glk);
 
     for (int b = 0; b < B; b++) {
         for (int t = 0; t < T; t++) {
@@ -164,7 +164,7 @@ void matmul_forward(float* out,
             ginp_bt = inp + b * T * C + t * C;
             gid = 0;
 
-            mutex_lock(&glk);
+            mutex_unlock(&glk);
 
             for(int i = 0; i < nT; i++){
                 V(&task);
