@@ -111,16 +111,18 @@ void T_compute(){
         float* weight = gweight;
         float* inp_bt = ginp_bt;
         float* out_bt = gout_bt;
+        int C = gC;
+        int OC = gOC;
 
         mutex_unlock(&glk);
 
-        for(int o = tid; o < gOC; o += nT){
+        for(int o = tid; o < OC; o += nT){
             // if(o % nT != tid){
             //     continue;
             // }
             float val = (bias != NULL) ? bias[o] : 0.0f;
-            float* wrow = weight + o * gC;
-            for (int i = 0; i < gC; i++) {
+            float* wrow = weight + o * C;
+            for (int i = 0; i < C; i++) {
                 val += inp_bt[i] * wrow[i];
             }
             out_bt[o] = val;
