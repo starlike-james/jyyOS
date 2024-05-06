@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
         if (!fgets(line, sizeof(line), stdin)) {
             break;
         }
-        printf("Got %zu chars.\n", strlen(line));
+        printf("Got %zu chars. %s\n", strlen(line), line);
 
         if(strncmp(line, "int", 3) == 0){
             func = true;
