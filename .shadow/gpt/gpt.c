@@ -90,8 +90,9 @@ int gid = 0;
 mutex_t glk = MUTEX_INIT();
 
 sem_t task, done;
+
 int fin = 0;
-int nT = 1;
+int nT = 4;
 //cond_t cv = COND_INIT();
 
 void T_compute(){
@@ -101,6 +102,7 @@ void T_compute(){
         if(fin == 1){
             break;
         }
+
         int tid = 0;
 
         mutex_lock(&glk);
@@ -108,6 +110,7 @@ void T_compute(){
         //assert(gid < nT);
         tid = gid;
         gid++;
+
         float* bias = gbias;
         float* weight = gweight;
         float* inp_bt = ginp_bt;
@@ -116,6 +119,11 @@ void T_compute(){
         int OC = gOC;
 
         mutex_unlock(&glk);
+        
+        if(tid >= nT){
+            V(&done);
+            continue;
+        }
 
         for(int o = tid; o < OC; o += nT){
             // if(o % nT != tid){
@@ -169,10 +177,10 @@ void matmul_forward(float* out,
 
             mutex_unlock(&glk);
 
-            for(int i = 0; i < nT; i++){
+            for(int i = 0; i < 2 * nT; i++){
                 V(&task);
             }
-            for(int i = 0; i < nT; i++){
+            for(int i = 0; i < 2 * nT; i++){
                 P(&done);
             }
 
