@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char template[] = "/tmp/creplXXXXXX";
+const char template[] = "/tmp/creplXXXXXX.c";
+const int suffixlen = 2;
+// char template[] = "/tmp/creplXXXXXX";
 
 int main(int argc, char *argv[]) {
     static char line[4096];
@@ -14,22 +16,31 @@ int main(int argc, char *argv[]) {
         fflush(stdout);
 
         bool func = false;
+        char temp[strlen(template) + 1];
+        strcpy(temp, template);
 
         if (!fgets(line, sizeof(line), stdin)) {
             break;
         }
+        printf("Got %zu chars.\n", strlen(line));
 
         if(strncmp(line, "int", 3) == 0){
             func = true;
         }
 
-        int fd = mkstemp(template);
-
+        int fd = mkstemps(temp, suffixlen);
         if (fd == -1) {
             perror("mkstemp");
             exit(EXIT_FAILURE);
         }
-        printf("临时文件名：%s\n", template);
+
+        // int pid = fork();
+        // if(pid == 0){
+        //     execlp("gcc", "gcc", "-shared", "-fPIC", "-w", "-o", "libtemp.so", "temp.c", NULL);
+        //     perror("execlp");
+        //     exit(EXIT_FAILURE);
+        // }
+
         
 
         
@@ -38,13 +49,11 @@ int main(int argc, char *argv[]) {
 
 
         // To be implemented.
-        printf("Got %zu chars.\n", strlen(line));
         
         close(fd);
-
-        // if(remove(template) == -1){
-        //     perror("remove");
-        //     exit(EXIT_FAILURE);
-        // }
+        if(remove(template) == -1){
+             perror("remove");
+             exit(EXIT_FAILURE);
+        }
     }
 }
