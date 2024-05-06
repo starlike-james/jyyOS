@@ -119,11 +119,6 @@ void T_compute(){
         int OC = gOC;
 
         mutex_unlock(&glk);
-        
-        if(tid >= nT){
-            V(&done);
-            continue;
-        }
 
         for(int o = tid; o < OC; o += nT){
             // if(o % nT != tid){
@@ -177,10 +172,10 @@ void matmul_forward(float* out,
 
             mutex_unlock(&glk);
 
-            for(int i = 0; i < 2 * nT; i++){
+            for(int i = 0; i < nT; i++){
                 V(&task);
             }
-            for(int i = 0; i < 2 * nT; i++){
+            for(int i = 0; i < nT; i++){
                 P(&done);
             }
 
@@ -694,7 +689,7 @@ int main(int argc, char** argv) {
     gpt2_free(&model);
 
     fin = 1;
-    for(int i = 0; i < 2 * nT; i++){
+    for(int i = 0; i < nT; i++){
         V(&task);
     }
     join();
