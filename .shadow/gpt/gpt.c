@@ -85,7 +85,8 @@ void layernorm_forward(float* out, float* mean, float* rstd,
 }
 
 int gC = 0, gOC = 0, gB = 0, gT = 0;
-float *gbias = NULL, *gweight = NULL, *ginp_bt = NULL, *gout_bt = NULL; 
+float *gout = NULL, *ginp = NULL;
+float *gbias = NULL, *gweight = NULL; //*ginp_bt = NULL, *gout_bt = NULL; 
 int gid = 0;
 mutex_t glk = MUTEX_INIT();
 
@@ -113,8 +114,6 @@ void T_compute(){
 
         float* bias = gbias;
         float* weight = gweight;
-        float* inp_bt = ginp_bt;
-        float* out_bt = gout_bt;
         int B = gB;
         int T = gT;
         int C = gC;
@@ -125,6 +124,8 @@ void T_compute(){
         for(int b = 0; b < B; b++){
             for(int t = 0; t < T; t++){
                 for(int o = tid; o < OC; o += nT){
+                    float *out_bt = out + b * T * OC + t * OC;
+                    float *inp_bt = inp + b * T * C + t * C;
                     float val = (bias != NULL) ? bias[o] : 0.0f;
                     float* wrow = weight + o * C;
                     for (int i = 0; i < C; i++) {
@@ -164,6 +165,8 @@ void matmul_forward(float* out,
     gweight = weight;
     gB = B;
     gT = T;
+    gout = out;
+    ginp = inp;
     gid = 0;
 
     mutex_unlock(&glk);
