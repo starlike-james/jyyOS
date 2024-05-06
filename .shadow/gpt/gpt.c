@@ -84,7 +84,7 @@ void layernorm_forward(float* out, float* mean, float* rstd,
     }
 }
 
-int gC = 0, gOC = 0;
+int gC = 0, gOC = 0, gB = 0, gT = 0;
 float *gbias = NULL, *gweight = NULL, *ginp_bt = NULL, *gout_bt = NULL; 
 int gid = 0;
 mutex_t glk = MUTEX_INIT();
@@ -115,22 +115,26 @@ void T_compute(){
         float* weight = gweight;
         float* inp_bt = ginp_bt;
         float* out_bt = gout_bt;
+        int B = gB;
+        int T = gT;
         int C = gC;
         int OC = gOC;
 
         mutex_unlock(&glk);
 
-        for(int o = tid; o < OC; o += nT){
-            // if(o % nT != tid){
-            //     continue;
-            // }
-            float val = (bias != NULL) ? bias[o] : 0.0f;
-            float* wrow = weight + o * C;
-            for (int i = 0; i < C; i++) {
-                val += inp_bt[i] * wrow[i];
+        for(int b = 0; b < B; b++){
+            for(int t = 0; t < T; t++){
+                for(int o = tid; o < OC; o += nT){
+                    float val = (bias != NULL) ? bias[o] : 0.0f;
+                    float* wrow = weight + o * C;
+                    for (int i = 0; i < C; i++) {
+                        val += inp_bt[i] * wrow[i];
+                    }
+                    out_bt[o] = val;
+                }
             }
-            out_bt[o] = val;
         }
+
 
         V(&done);
     }
@@ -158,26 +162,36 @@ void matmul_forward(float* out,
     gOC = OC;
     gbias = bias;
     gweight = weight;
+    gB = B;
+    gT = T;
+    gid = 0;
 
     mutex_unlock(&glk);
 
-    for (int b = 0; b < B; b++) {
-        for (int t = 0; t < T; t++) {
+    for(int i = 0; i < nT; i++){
+        V(&task);
+    }
+    for(int i = 0; i < nT; i++){
+        P(&done);
+    }
 
-            mutex_lock(&glk);
-
-            gout_bt = out + b * T * OC + t * OC;
-            ginp_bt = inp + b * T * C + t * C;
-            gid = 0;
-
-            mutex_unlock(&glk);
-
-            for(int i = 0; i < nT; i++){
-                V(&task);
-            }
-            for(int i = 0; i < nT; i++){
-                P(&done);
-            }
+    // for (int b = 0; b < B; b++) {
+    //     for (int t = 0; t < T; t++) {
+    //
+    //         mutex_lock(&glk);
+    //
+    //         gout_bt = out + b * T * OC + t * OC;
+    //         ginp_bt = inp + b * T * C + t * C;
+    //         gid = 0;
+    //
+    //         mutex_unlock(&glk);
+    //
+    //         for(int i = 0; i < nT; i++){
+    //             V(&task);
+    //         }
+    //         for(int i = 0; i < nT; i++){
+    //             P(&done);
+    //         }
 
             //assert(gid == nT);
             /*for (int o = 0; o < OC; o++) {
