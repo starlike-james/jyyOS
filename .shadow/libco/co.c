@@ -1,19 +1,4 @@
 #include "co.h"
-<<<<<<< HEAD
-#include <stdlib.h>
-
-struct co {
-};
-
-struct co *co_start(const char *name, void (*func)(void *), void *arg) {
-    return NULL;
-}
-
-void co_wait(struct co *co) {
-}
-
-void co_yield() {
-=======
 
 #include <assert.h>
 #include <stdint.h>
@@ -147,5 +132,4 @@ void co_yield () {
   current = colist[idx];
   // printf("prev:%s current:%s\n", prev->name, current->name);
   swapcontext(&prev->ucontext, &current->ucontext);
->>>>>>> L1
 }

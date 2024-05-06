@@ -1,11 +1,7 @@
 // DO NOT MODIFY: Will be reverted by the Online Judge.
-<<<<<<< HEAD
-
-=======
 #ifndef KERNEL_H__
 
 #define KERNEL_H__
->>>>>>> L1
 #include <am.h>
 
 #define MODULE(mod) \
@@ -28,7 +24,4 @@ MODULE(pmm) {
     void *(*alloc)(size_t size);
     void  (*free)(void *ptr);
 };
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> L1
