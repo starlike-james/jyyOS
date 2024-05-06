@@ -84,12 +84,15 @@ void layernorm_forward(float* out, float* mean, float* rstd,
     }
 }
 
-int gC = 0, gOC = 0;
-float *gbias = NULL, *gweight = NULL, *inp_bt = NULL, *out_bt = NULL; 
+int gC = 0, gOC = 0, gB = 0, gT = 0;
+float *gout = NULL, *ginp = NULL;
+float *gbias = NULL, *gweight = NULL; //*ginp_bt = NULL, *gout_bt = NULL; 
 int gid = 0;
-mutex_t lk = MUTEX_INIT();
+mutex_t glk = MUTEX_INIT();
+
 sem_t task, done;
-int finish = 0;
+
+int fin = 0;
 int nT = 4;
 //cond_t cv = COND_INIT();
 
@@ -97,41 +100,55 @@ void T_compute(){
     while(1){
         P(&task);
 
-        if(finish == 1){
+        if(fin == 1){
             break;
         }
-        int id = 0;
 
-        mutex_lock(&lk);
+        int tid = 0;
 
-        assert(gid < nT);
-        id = gid;
+        mutex_lock(&glk);
+
+        //assert(gid < nT);
+        tid = gid;
         gid++;
 
-        mutex_unlock(&lk);
+        float* bias = gbias;
+        float* weight = gweight;
+        float* out = gout;
+        float* inp = ginp;
+        int B = gB;
+        int T = gT;
+        int C = gC;
+        int OC = gOC;
 
-        for(int o = 0; o < gOC; o++){
-            if(o % nT != id){
-                continue;
+        mutex_unlock(&glk);
+
+        for(int b = 0; b < B; b++){
+            for(int t = 0; t < T; t++){
+                for(int o = tid; o < OC; o += nT){
+                    float *out_bt = out + b * T * OC + t * OC;
+                    float *inp_bt = inp + b * T * C + t * C;
+                    float val = (bias != NULL) ? bias[o] : 0.0f;
+                    float* wrow = weight + o * C;
+                    for (int i = 0; i < C; i++) {
+                        val += inp_bt[i] * wrow[i];
+                    }
+                    out_bt[o] = val;
+                }
             }
-            float val = (gbias != NULL) ? gbias[o] : 0.0f;
-            float* wrow = gweight + o * gC;
-            for (int i = 0; i < gC; i++) {
-                val += inp_bt[i] * wrow[i];
-            }
-            out_bt[o] = val;
         }
+
 
         V(&done);
     }
 }
 
 void T_init(){
+    SEM_INIT(&task, 0);
+    SEM_INIT(&done, 0);
     for(int i = 0; i < nT; i++){
         create(T_compute);
     }
-    SEM_INIT(&task, 0);
-    SEM_INIT(&done, 0);
 }
 
 void matmul_forward(float* out,
@@ -141,22 +158,47 @@ void matmul_forward(float* out,
     // OC is short for "output channels"
     // inp is (B,T,C), weight is (OC, C), bias is (OC)
     // out will be (B,T,OC)
+    
+    mutex_lock(&glk);
+
     gC = C;
     gOC = OC;
     gbias = bias;
     gweight = weight;
-    for (int b = 0; b < B; b++) {
-        for (int t = 0; t < T; t++) {
-            out_bt = out + b * T * OC + t * OC;
-            inp_bt = inp + b * T * C + t * C;
-            gid = 0;
-            for(int o = 0; o < nT; o++){
-                V(&task);
-            }
-            for(int o = 0; o < nT; o++){
-                P(&done);
-            }
-            assert(gid == nT);
+    gB = B;
+    gT = T;
+    gout = out;
+    ginp = inp;
+    gid = 0;
+
+    mutex_unlock(&glk);
+
+    for(int i = 0; i < nT; i++){
+        V(&task);
+    }
+    for(int i = 0; i < nT; i++){
+        P(&done);
+    }
+
+    // for (int b = 0; b < B; b++) {
+    //     for (int t = 0; t < T; t++) {
+    //
+    //         mutex_lock(&glk);
+    //
+    //         gout_bt = out + b * T * OC + t * OC;
+    //         ginp_bt = inp + b * T * C + t * C;
+    //         gid = 0;
+    //
+    //         mutex_unlock(&glk);
+    //
+    //         for(int i = 0; i < nT; i++){
+    //             V(&task);
+    //         }
+    //         for(int i = 0; i < nT; i++){
+    //             P(&done);
+    //         }
+
+            //assert(gid == nT);
             /*for (int o = 0; o < OC; o++) {
                 float val = (bias != NULL) ? bias[o] : 0.0f;
                 float* wrow = weight + o*C;
@@ -166,8 +208,8 @@ void matmul_forward(float* out,
                 out_bt[o] = val;
             }
             */
-        }
-    }
+    //    }
+    //}
 }
 
 void attention_forward(float* out, float* preatt, float* att,
@@ -665,7 +707,7 @@ int main(int argc, char** argv) {
 
     gpt2_free(&model);
 
-    finish = 1;
+    fin = 1;
     for(int i = 0; i < nT; i++){
         V(&task);
     }
