@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        char expr_func[100] = "";
+        char expr_func[5100] = "";
 
         if(func){
             write(fd, line, strlen(line));
