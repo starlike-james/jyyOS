@@ -42,9 +42,9 @@ int main(int argc, char *argv[]) {
         
         close(fd);
 
-        if(remove(template) == -1){
-            perror("remove");
-            exit(EXIT_FAILURE);
-        }
+        // if(remove(template) == -1){
+        //     perror("remove");
+        //     exit(EXIT_FAILURE);
+        // }
     }
 }
