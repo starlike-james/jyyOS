@@ -114,6 +114,8 @@ void T_compute(){
 
         float* bias = gbias;
         float* weight = gweight;
+        float* out = gout;
+        float* inp = ginp;
         int B = gB;
         int T = gT;
         int C = gC;
