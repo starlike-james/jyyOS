@@ -163,7 +163,7 @@ void slab_free(void *ptr){
             assert(prev->next == slab);
             prev->next = slab->next;
         }
-        central_free(header, true);
+        //central_free(header, true);
     }
 
     spin_unlock(&slablist->lk);
