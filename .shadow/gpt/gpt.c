@@ -137,11 +137,11 @@ void T_compute(){
 }
 
 void T_init(){
+    SEM_INIT(&task, 0);
+    SEM_INIT(&done, 0);
     for(int i = 0; i < nT; i++){
         create(T_compute);
     }
-    SEM_INIT(&task, 0);
-    SEM_INIT(&done, 0);
 }
 
 void matmul_forward(float* out,
