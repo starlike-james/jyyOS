@@ -694,7 +694,7 @@ int main(int argc, char** argv) {
     gpt2_free(&model);
 
     fin = 1;
-    for(int i = 0; i < nT; i++){
+    for(int i = 0; i < 2 * nT; i++){
         V(&task);
     }
     join();
