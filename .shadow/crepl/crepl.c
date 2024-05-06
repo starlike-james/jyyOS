@@ -6,7 +6,8 @@
 
 const char template[] = "/tmp/creplXXXXXX.c";
 const int suffixlen = 2;
-const char expr_func_template[] = "__expr_wrapper_";
+const char expr_func_name[] = "__expr_wrapper_";
+const char expr_func_suffix[] = ";}";
 int expr_cnt = 0;
 // char template[] = "/tmp/creplXXXXXX";
 
@@ -36,14 +37,17 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        char expr_func[5100] = "";
+        char expr_func_suffix[50] = "";
+        char expr_func_prev[50] = "";
 
         if(func){
             write(fd, line, strlen(line));
         }
         else{
-            sprintf(expr_func, "int %s%d() { return %s ;}", expr_func_template, expr_cnt, line);
-            write(fd, expr_func, strlen(expr_func));
+            sprintf(expr_func_prev, "int %s%d() { return ", expr_func_name, expr_cnt);
+            write(fd, expr_func_prev, strlen(expr_func_prev));
+            write(fd, line, strlen(line));
+            write(fd, expr_func_suffix, strlen(expr_func_suffix));
         }
 
         // int pid = fork();
