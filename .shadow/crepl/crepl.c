@@ -63,9 +63,9 @@ int main(int argc, char *argv[]) {
         // To be implemented.
         
         close(fd);
-        if(remove(temp) == -1){
-              perror("remove");
-              exit(EXIT_FAILURE);
-        }
+        // if(remove(temp) == -1){
+        //       perror("remove");
+        //       exit(EXIT_FAILURE);
+        // }
     }
 }
