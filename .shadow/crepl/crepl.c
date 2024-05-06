@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
             func = true;
         }
 
-        int fd = mkstemp(template);
+        int fd = mkstemps(template, 100);
 
         if (fd == -1) {
             perror("mkstemp");
