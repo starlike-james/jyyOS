@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
         // To be implemented.
         
         close(fd);
-        if(remove(template) == -1){
+        if(remove(temp) == -1){
              perror("remove");
              exit(EXIT_FAILURE);
         }
