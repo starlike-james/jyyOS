@@ -37,7 +37,6 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        char expr_func_suffix[50] = "";
         char expr_func_prev[50] = "";
 
         if(func){
