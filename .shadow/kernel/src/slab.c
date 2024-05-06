@@ -154,15 +154,16 @@ void slab_free(void *ptr){
     if(slab->free_count == 0 && slab->ref_count == 0){
         slab_t *prev = slablist->head;
         if(prev == slab){
-            slablist->head = slab->next;
+            slablist->head = NULL;
         }
-        else{
-            while(prev->next != NULL && prev->next != slab){
-                prev = prev->next;
-            }
-            assert(prev->next == slab);
-            prev->next = slab->next;
-        }
+
+        // else{
+        //     while(prev->next != NULL && prev->next != slab){
+        //         prev = prev->next;
+        //     }
+        //     assert(prev->next == slab);
+        //     prev->next = slab->next;
+        // }
         //central_free(header, true);
     }
 
