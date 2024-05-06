@@ -95,9 +95,9 @@ void *slab_allocate(size_t size){
         slab = add_new_slab(slablist, align);
     }
     else{
-        while(slab->free_count == 0 && slab->next != NULL){
-            slab = slab->next;
-        }
+        // while(slab->free_count == 0 && slab->next != NULL){
+        //     slab = slab->next;
+        // }
         if(slab->free_count == 0){
             slab = add_new_slab(slablist, align);
         }
@@ -163,7 +163,7 @@ void slab_free(void *ptr){
             assert(prev->next == slab);
             prev->next = slab->next;
         }
-        //central_free(header, true);
+        central_free(header, true);
     }
 
     spin_unlock(&slablist->lk);
