@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
         }
 
         write(fd, line, strlen(line));
+        write(fd, "hello", 5);
 
         // int pid = fork();
         // if(pid == 0){
