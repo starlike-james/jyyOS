@@ -34,6 +34,8 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
+        write(fd, line, strlen(line));
+
         // int pid = fork();
         // if(pid == 0){
         //     execlp("gcc", "gcc", "-shared", "-fPIC", "-w", "-o", "libtemp.so", "temp.c", NULL);
@@ -51,9 +53,9 @@ int main(int argc, char *argv[]) {
         // To be implemented.
         
         close(fd);
-        if(remove(temp) == -1){
-             perror("remove");
-             exit(EXIT_FAILURE);
-        }
+        // if(remove(temp) == -1){
+        //      perror("remove");
+        //      exit(EXIT_FAILURE);
+        // }
     }
 }
