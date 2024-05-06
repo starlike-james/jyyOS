@@ -203,8 +203,8 @@ void matmul_forward(float* out,
                 out_bt[o] = val;
             }
             */
-        }
-    }
+    //    }
+    //}
 }
 
 void attention_forward(float* out, float* preatt, float* att,
