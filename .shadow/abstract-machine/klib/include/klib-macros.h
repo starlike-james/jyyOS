@@ -1,5 +1,6 @@
 #ifndef KLIB_MACROS_H__
 #define KLIB_MACROS_H__
+#include <stdio.h>
 
 #define ROUNDUP(a, sz)      ((((uintptr_t)a) + (sz) - 1) & ~((sz) - 1))
 #define ROUNDDOWN(a, sz)    ((((uintptr_t)a)) & ~((sz) - 1))
@@ -29,8 +30,8 @@
 
 #define panic_on(cond, s) \
   ({ if (cond) { \
-      putstr("AM Panic: "); putstr(s); \
-      putstr(" @ " __FILE__ ":" TOSTRING(__LINE__) "  \n"); \
+      printf("AM Panic: "); printf(s); \
+      printf(" @ " __FILE__ ":" TOSTRING(__LINE__) "  \n"); \
       halt(1); \
     } })
 

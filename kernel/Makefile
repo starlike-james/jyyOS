@@ -2,6 +2,7 @@ NAME           := kernel
 SRCS           := framework/main.c $(shell find -L ./src/ -name "*.c")
 INC_PATH       := include/ framework/
 
+export MODULE := L1
 export AM_HOME := $(PWD)/../abstract-machine
 ifeq ($(ARCH),)
 export ARCH    := x86_64-qemu
