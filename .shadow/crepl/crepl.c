@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        sprintf(dyfilename, "%s", filename);
+        sprintf(dyfilename, "%s-c", filename);
         char expr_func_prev[50] = "";
 
         if(func){
