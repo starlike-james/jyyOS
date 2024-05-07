@@ -16,13 +16,9 @@ int null_fd = 0;
 #define STDOUT_FIFENO 1
 #define STDERR_FIFENO 2
 // char template[] = "/tmp/creplXXXXXX";
-// char filename[50];
-// char dyfilename[50];
 
-char* compile(const char* filename){
+int compile(const char* filename, const char* dyfilename){
     int pid = fork();
-    static char dyfilename[50];
-    sprintf(dyfilename, "%s.so", filename);
     if(pid == 0){
         // dup2(null_fd, STDOUT_FIFENO);
         // dup2(null_fd, STDERR_FIFENO);
@@ -37,9 +33,9 @@ char* compile(const char* filename){
         wait(&status);
         if(WIFEXITED(status)){
             printf("gcc: compile error!\n");
-            return NULL;
+            return 1;
         }
-        return dyfilename;
+        return 0;
     }
 }
 
@@ -56,8 +52,10 @@ int main(int argc, char *argv[]) {
         fflush(stdout);
 
         bool func = false;
-        char filename[50];
-        char *dyfilename;
+        
+        char filename[50] = "";
+        char dyfilename[50] = "";
+
         strcpy(filename, template);
 
         if (!fgets(line, sizeof(line), stdin)) {
@@ -75,12 +73,11 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
+        sprintf(dyfilename, "%s.so", filename);
         char expr_func_prev[50] = "";
 
         if(func){
-            write(fd, line, strlen(line));
-            
-            dyfilename = compile(filename);
+            write(fd, line, strlen(line));     
         }
         else{
             sprintf(expr_func_prev, "int %s%d() { return ", expr_func_nametemp, expr_cnt);
@@ -88,9 +85,9 @@ int main(int argc, char *argv[]) {
             write(fd, line, strlen(line));
             write(fd, expr_func_suffix, strlen(expr_func_suffix));
             
-            dyfilename = compile(filename);
         }
 
+        int comstatus = compile(filename, dyfilename);
 
         
 
@@ -103,8 +100,5 @@ int main(int argc, char *argv[]) {
         
         close(fd);
         //unlink(filename);
-        if(dyfilename != NULL){
-            unlink(dyfilename);
-        }
     }
 }
