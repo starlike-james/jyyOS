@@ -3,16 +3,40 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 
-const char template[] = "/tmp/creplXXXXXX.c";
+const char template[] = "/tmp/creplXXXXXX";
 const int suffixlen = 2;
-const char expr_func_name[] = "__expr_wrapper_";
+const char expr_func_nametemp[] = "__expr_wrapper_";
 const char expr_func_suffix[] = ";}";
 int expr_cnt = 0;
+
+int null_fd = 0;
 // char template[] = "/tmp/creplXXXXXX";
+void compile(const char* filename){
+    int pid = fork();
+    if(pid == 0){
+        char dyfilename[50];
+        sprintf(dyfilename, "%s.so", filename);
+        freopen("/dev/null", "w", stdout);
+        freopen("/dev/null", "w", stderr);
+        execlp("gcc", "gcc", "-shared", "-fPIC", "-w", "-o", dyfilename, filename, NULL);
+        perror("execlp");
+        exit(EXIT_FAILURE);
+    }
+    else{
+        wait(NULL);
+    }
+}
+
+void dyload(const char* funcname){
+
+}
 
 int main(int argc, char *argv[]) {
     static char line[4096];
+    null_fd = open("/dev/null", O_WRONLY);
 
     while (1) {
         printf("crepl> ");
@@ -31,7 +55,7 @@ int main(int argc, char *argv[]) {
             func = true;
         }
 
-        int fd = mkstemps(temp, suffixlen);
+        int fd = mkstemp(temp);
         if (fd == -1) {
             perror("mkstemp");
             exit(EXIT_FAILURE);
@@ -43,18 +67,12 @@ int main(int argc, char *argv[]) {
             write(fd, line, strlen(line));
         }
         else{
-            sprintf(expr_func_prev, "int %s%d() { return ", expr_func_name, expr_cnt);
+            sprintf(expr_func_prev, "int %s%d() { return ", expr_func_nametemp, expr_cnt);
             write(fd, expr_func_prev, strlen(expr_func_prev));
             write(fd, line, strlen(line));
             write(fd, expr_func_suffix, strlen(expr_func_suffix));
         }
 
-        // int pid = fork();
-        // if(pid == 0){
-        //     execlp("gcc", "gcc", "-shared", "-fPIC", "-w", "-o", "libtemp.so", "temp.c", NULL);
-        //     perror("execlp");
-        //     exit(EXIT_FAILURE);
-        // }
 
         
 
