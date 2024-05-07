@@ -4,3 +4,5 @@ all: $(NAME)-64 $(NAME)-32
 LDFLAGS += -ldl
 
 include ../Makefile
+
+CFLAGS += -Wno-unused-but-set-variable
