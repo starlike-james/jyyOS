@@ -65,12 +65,16 @@ int main(int argc, char *argv[]) {
 
         if(func){
             write(fd, line, strlen(line));
+            
+            compile(temp);
         }
         else{
             sprintf(expr_func_prev, "int %s%d() { return ", expr_func_nametemp, expr_cnt);
             write(fd, expr_func_prev, strlen(expr_func_prev));
             write(fd, line, strlen(line));
             write(fd, expr_func_suffix, strlen(expr_func_suffix));
+            
+            compile(temp);
         }
 
 
