@@ -20,8 +20,8 @@ int null_fd = 0;
 int compile(const char* filename, const char* dyfilename){
     int pid = fork();
     if(pid == 0){
-        // dup2(null_fd, STDOUT_FIFENO);
-        // dup2(null_fd, STDERR_FIFENO);
+        dup2(null_fd, STDOUT_FIFENO);
+        dup2(null_fd, STDERR_FIFENO);
         //freopen("/dev/null", "w", stdout);
         //freopen("/dev/null", "w", stderr);
         execlp("gcc", "gcc", "-shared", "-fPIC", "-w", "-o", dyfilename, "-x", "c", filename, NULL);
