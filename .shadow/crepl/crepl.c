@@ -32,8 +32,8 @@ int compile(const char* filename, const char* dyfilename){
         int status = 0;
         wait(&status);
         int exit_status = WEXITSTATUS(status);
-        printf("%d\n", exit_status);
-        return 0;
+        //printf("%d\n", exit_status);
+        return exit_status;
     }
 }
 
@@ -82,11 +82,18 @@ int main(int argc, char *argv[]) {
             sprintf(expr_func_prev, "int %s%d() { return ", expr_func_nametemp, expr_cnt);
             write(fd, expr_func_prev, strlen(expr_func_prev));
             write(fd, line, strlen(line));
-            write(fd, expr_func_suffix, strlen(expr_func_suffix));
-            
+            write(fd, expr_func_suffix, strlen(expr_func_suffix));    
         }
 
-        int comstatus = compile(filename, dyfilename);
+        close(fd);
+
+        int exit_status = compile(filename, dyfilename);
+
+        if(exit_status != 0){
+            printf("gcc: compile error!\n");
+            unlink(filename);
+            continue;
+        }
 
         
 
@@ -97,7 +104,7 @@ int main(int argc, char *argv[]) {
 
         // To be implemented.
         
-        close(fd);
-        //unlink(filename);
+        unlink(filename);
+        unlink(dyfilename);
     }
 }
