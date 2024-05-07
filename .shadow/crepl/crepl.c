@@ -25,7 +25,12 @@ int compile(const char* filename, const char* dyfilename){
         dup2(null_fd, STDERR_FIFENO);
         //freopen("/dev/null", "w", stdout);
         //freopen("/dev/null", "w", stderr);
-        execlp("gcc", "gcc", "-shared", "-fPIC", "-w", "-o", dyfilename, "-x", "c", filename, NULL);
+        #ifdef __x86_64__
+            execlp("gcc", "gcc", "-shared", "-fPIC", "-m64", "-w", "-o", dyfilename, "-x", "c", filename, NULL);
+        #else
+            execlp("gcc", "gcc", "-shared", "-fPIC", "-m32", "-w", "-o", dyfilename, "-x", "c", filename, NULL);
+        #endif
+
         perror("execlp");
         exit(EXIT_FAILURE);
     }
