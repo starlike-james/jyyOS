@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <dlfcn.h>
 #include <sys/wait.h>
 
 const char template[] = "/tmp/creplXXXXXX";
@@ -37,8 +38,15 @@ int compile(const char* filename, const char* dyfilename){
     }
 }
 
-void dyload(const char* funcname){
-
+void* dyload(const char* dyfilename){
+    void *handle;
+    handle = dlopen(dyfilename, RTLD_LAZY | RTLD_GLOBAL);
+    if (!handle) {
+        fprintf(stderr, "%s\n", dlerror());
+        return NULL;
+    }
+    dlerror();
+    return handle;
 }
 
 int main(int argc, char *argv[]) {
@@ -49,10 +57,10 @@ int main(int argc, char *argv[]) {
         printf("crepl> ");
         fflush(stdout);
 
-        bool func = false;
+        bool is_func = false;
         
-        char filename[40] = "";
-        char dyfilename[50] = "";
+        char filename[25] = "";
+        char dyfilename[30] = "";
 
         strcpy(filename, template);
 
@@ -62,7 +70,7 @@ int main(int argc, char *argv[]) {
         // printf("Got %zu chars.\n", strlen(line));
 
         if(strncmp(line, "int", 3) == 0){
-            func = true;
+            is_func = true;
         }
 
         int fd = mkstemp(filename);
@@ -73,13 +81,15 @@ int main(int argc, char *argv[]) {
 
         sprintf(dyfilename, "%s.so", filename);
         
-        char expr_func_prev[50] = "";
-
-        if(func){
+        char expr_func_name[30] = "";
+        if(is_func){
             write(fd, line, strlen(line));     
         }
         else{
-            sprintf(expr_func_prev, "int %s%d() { return ", expr_func_nametemp, expr_cnt);
+            char expr_func_prev[50] = "";
+            sprintf(expr_func_name, "%s%d", expr_func_nametemp, expr_cnt);
+            expr_cnt++;
+            sprintf(expr_func_prev, "int %s() { return ", expr_func_name);
             write(fd, expr_func_prev, strlen(expr_func_prev));
             write(fd, line, strlen(line));
             write(fd, expr_func_suffix, strlen(expr_func_suffix));    
@@ -90,18 +100,23 @@ int main(int argc, char *argv[]) {
         int exit_status = compile(filename, dyfilename);
 
         if(exit_status != 0){
-            printf("gcc: compile error!\n");
+            printf("Not a valid function or expression.\n");
             unlink(filename);
             continue;
         }
+        
+        void *handle = dyload(dyfilename);
+        if(!is_func){
+            int (*expr_func)(void);
+            *(void **)(&expr_func) = dlsym(handle, expr_func_name);
+            int res = expr_func();
+            printf("= %d\n", res);
+        }
+        else{
+            printf("OK.\n");
+        }
 
         
-
-        
-
-        
-
-
         // To be implemented.
         
         unlink(filename);
