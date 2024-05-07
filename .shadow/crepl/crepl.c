@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 
         bool func = false;
         
-        char filename[50] = "";
+        char filename[40] = "";
         char dyfilename[50] = "";
 
         strcpy(filename, template);
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        sprintf(dyfilename, "%s-c", filename);
+        sprintf(dyfilename, "%s.so", filename);
         char expr_func_prev[50] = "";
 
         if(func){
