@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
         int exit_status = compile(filename, dyfilename);
 
         if(exit_status != 0){
-            printf("Not a valid function or expression.\n");
+            printf("Compile Error.\n");
             unlink(filename);
             continue;
         }
