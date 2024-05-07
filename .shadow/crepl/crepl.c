@@ -19,7 +19,7 @@ int null_fd = 0;
 // char filename[50];
 // char dyfilename[50];
 
-void compile(const char* filename){
+char* compile(const char* filename){
     int pid = fork();
     static char dyfilename[50];
     sprintf(dyfilename, "%s.so", filename);
@@ -37,7 +37,9 @@ void compile(const char* filename){
         wait(&status);
         if(WIFEXITED(status)){
             printf("gcc: compile error!\n");
+            return NULL;
         }
+        return dyfilename;
     }
 }
 
@@ -55,6 +57,7 @@ int main(int argc, char *argv[]) {
 
         bool func = false;
         char filename[50];
+        char *dyfilename;
         strcpy(filename, template);
 
         if (!fgets(line, sizeof(line), stdin)) {
@@ -77,7 +80,7 @@ int main(int argc, char *argv[]) {
         if(func){
             write(fd, line, strlen(line));
             
-            compile(filename);
+            dyfilename = compile(filename);
         }
         else{
             sprintf(expr_func_prev, "int %s%d() { return ", expr_func_nametemp, expr_cnt);
@@ -85,7 +88,7 @@ int main(int argc, char *argv[]) {
             write(fd, line, strlen(line));
             write(fd, expr_func_suffix, strlen(expr_func_suffix));
             
-            compile(filename);
+            dyfilename = compile(filename);
         }
 
 
@@ -100,5 +103,8 @@ int main(int argc, char *argv[]) {
         
         close(fd);
         unlink(filename);
+        if(dyfilename != NULL){
+            unlink(dyfilename);
+        }
     }
 }
