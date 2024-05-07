@@ -19,8 +19,8 @@ void compile(const char* filename){
     if(pid == 0){
         char dyfilename[50];
         sprintf(dyfilename, "%s.so", filename);
-        freopen("/dev/null", "w", stdout);
-        freopen("/dev/null", "w", stderr);
+        //freopen("/dev/null", "w", stdout);
+        //freopen("/dev/null", "w", stderr);
         execlp("gcc", "gcc", "-shared", "-fPIC", "-w", "-o", dyfilename, filename, NULL);
         perror("execlp");
         exit(EXIT_FAILURE);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         if (!fgets(line, sizeof(line), stdin)) {
             break;
         }
-        printf("Got %zu chars. %s\n", strlen(line), line);
+        printf("Got %zu chars.\n", strlen(line));
 
         if(strncmp(line, "int", 3) == 0){
             func = true;
