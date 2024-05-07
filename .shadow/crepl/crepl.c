@@ -24,8 +24,8 @@ char* compile(const char* filename){
     static char dyfilename[50];
     sprintf(dyfilename, "%s.so", filename);
     if(pid == 0){
-        dup2(null_fd, STDOUT_FIFENO);
-        dup2(null_fd, STDERR_FIFENO);
+        // dup2(null_fd, STDOUT_FIFENO);
+        // dup2(null_fd, STDERR_FIFENO);
         //freopen("/dev/null", "w", stdout);
         //freopen("/dev/null", "w", stderr);
         execlp("gcc", "gcc", "-shared", "-fPIC", "-w", "-o", dyfilename, filename, NULL);
