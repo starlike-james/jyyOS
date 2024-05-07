@@ -31,10 +31,8 @@ int compile(const char* filename, const char* dyfilename){
     else{
         int status = 0;
         wait(&status);
-        if(WIFEXITED(status)){
-            printf("gcc: compile error!\n");
-            return 1;
-        }
+        int exit_status = WEXITSTATUS(status);
+        printf("%d\n", exit_status);
         return 0;
     }
 }
