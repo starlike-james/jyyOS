@@ -16,11 +16,14 @@ int null_fd = 0;
 #define STDOUT_FIFENO 1
 #define STDERR_FIFENO 2
 // char template[] = "/tmp/creplXXXXXX";
+// char filename[50];
+// char dyfilename[50];
+
 void compile(const char* filename){
     int pid = fork();
+    static char dyfilename[50];
+    sprintf(dyfilename, "%s.so", filename);
     if(pid == 0){
-        char dyfilename[50];
-        sprintf(dyfilename, "%s.so", filename);
         dup2(null_fd, STDOUT_FIFENO);
         dup2(null_fd, STDERR_FIFENO);
         //freopen("/dev/null", "w", stdout);
@@ -33,7 +36,7 @@ void compile(const char* filename){
         int status = 0;
         wait(&status);
         if(WIFEXITED(status)){
-            printf("Compile error\n");
+            printf("gcc: compile error!\n");
         }
     }
 }
@@ -51,19 +54,19 @@ int main(int argc, char *argv[]) {
         fflush(stdout);
 
         bool func = false;
-        char temp[strlen(template) + 1];
-        strcpy(temp, template);
+        char filename[50];
+        strcpy(filename, template);
 
         if (!fgets(line, sizeof(line), stdin)) {
             break;
         }
-        printf("Got %zu chars.\n", strlen(line));
+        // printf("Got %zu chars.\n", strlen(line));
 
         if(strncmp(line, "int", 3) == 0){
             func = true;
         }
 
-        int fd = mkstemp(temp);
+        int fd = mkstemp(filename);
         if (fd == -1) {
             perror("mkstemp");
             exit(EXIT_FAILURE);
@@ -74,7 +77,7 @@ int main(int argc, char *argv[]) {
         if(func){
             write(fd, line, strlen(line));
             
-            compile(temp);
+            compile(filename);
         }
         else{
             sprintf(expr_func_prev, "int %s%d() { return ", expr_func_nametemp, expr_cnt);
@@ -82,7 +85,7 @@ int main(int argc, char *argv[]) {
             write(fd, line, strlen(line));
             write(fd, expr_func_suffix, strlen(expr_func_suffix));
             
-            compile(temp);
+            compile(filename);
         }
 
 
@@ -96,9 +99,6 @@ int main(int argc, char *argv[]) {
         // To be implemented.
         
         close(fd);
-        // if(remove(temp) == -1){
-        //       perror("remove");
-        //       exit(EXIT_FAILURE);
-        // }
+        unlink(filename);
     }
 }
