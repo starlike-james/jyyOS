@@ -115,14 +115,14 @@ int main(int argc, char *argv[]) {
         if(!is_func){
             int (*expr_func)(void);
             *(void **)(&expr_func) = dlsym(handle, expr_func_name);
-            int res = expr_func();
-
             char* error;
             if((error = dlerror()) != NULL){
                 fprintf(stderr, "%s\n", error);
             }
-
-            printf("= %d\n", res);
+            else{
+                int res = expr_func();
+                printf("= %d\n", res);
+            }
         }
         else{
             printf("OK.\n");
