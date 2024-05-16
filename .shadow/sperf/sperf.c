@@ -21,7 +21,7 @@ struct timeval last;
 struct timeval current;
 
 char regex_syscall[20] = "^[^(]*";
-char regex_time[20] = "<.*>";
+char regex_time[20] = "<.*>$";
 
 char* match_regax(const char *line, const char *regex_text){
     regex_t regex;
@@ -29,7 +29,7 @@ char* match_regax(const char *line, const char *regex_text){
     regmatch_t matches[1];
     // static char matchbuf[100];
 
-    result = regcomp(&regex, regex_text, 0);
+    result = regcomp(&regex, regex_text, REG_NEWLINE);
     if(result != 0){
         char err[100];
         regerror(result, &regex, err, sizeof(err));
