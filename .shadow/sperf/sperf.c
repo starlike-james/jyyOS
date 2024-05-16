@@ -155,11 +155,11 @@ int main(int argc, char *argv[]) {
             }
 
             if(syscallname != NULL){
-                printf("%s\n", syscallname);
+                // printf("%s\n", syscallname);
                 free(syscallname);
             }
             if(systime != NULL){
-                // printf("%s\n", systime);
+                printf("%s\n", systime);
                 free(systime);
             }
 
