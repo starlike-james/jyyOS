@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
                 free(syscallname);
             }
             if(systime != NULL){
-                printf("%s\n", systime);
+                // printf("%s\n", systime);
                 free(systime);
             }
 
