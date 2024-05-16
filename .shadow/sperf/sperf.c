@@ -1,11 +1,13 @@
 #include <assert.h>
 #include <fcntl.h>
+#include <ostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <sys/time.h>
+#include <sys/wait.h>
 #include <unistd.h>
+#include <regex.h>
 
 extern char **environ;
 const int sec = 1000000;
@@ -17,6 +19,47 @@ const int msec = 100000;
 #define STDERR 2
 struct timeval last;
 struct timeval current;
+
+char regex_syscall[20] = "^[^(]*";
+char regex_time[20] = "<.*>$";
+
+char* match_regax(const char *line, const char *regex_text){
+    regex_t regex;
+    int result;
+    regmatch_t matches[1];
+    // static char matchbuf[100];
+
+    result = regcomp(&regex, regex_text, 0);
+    if(result != 0){
+        char err[100];
+        regerror(result, &regex, err, sizeof(err));
+        fprintf(stderr, "Regex error compling '%s': %s\n", regex_text, err);
+        return NULL;
+    }
+
+    result = regexec(&regex, line, 1, matches, 0);
+    regfree(&regex);
+
+    if(result == 0){
+        int len = matches[0].rm_eo - matches[0].rm_so;
+        char* matchbuf = malloc(len);
+        strncpy(matchbuf, regex_text + matches[0].rm_so, matches[0].rm_eo - matches[0].rm_so);
+        matchbuf[len] = 0;
+        assert(strlen(matchbuf) == len);
+        return matchbuf;
+    }
+    else if(result == REG_NOMATCH){
+        fprintf(stderr, "No match found.\n");
+        return NULL;
+    }
+    else{
+        char err[100];
+        regerror(result, &regex, err, sizeof(err));
+        fprintf(stderr, "Regex error compling '%s': %s\n", regex_text, err);
+        return NULL;
+    }
+}
+
 int main(int argc, char *argv[]) {
     char **env = environ;
     int pipefd[2];
@@ -44,7 +87,7 @@ int main(int argc, char *argv[]) {
         char **args = malloc(sizeof(char *) * (argc + 2));
         args[0] = "strace";
         args[1] = "-T";
-        for(int i = 1; i <= argc; i++){
+        for (int i = 1; i <= argc; i++) {
             args[i + 1] = argv[i];
         }
 
@@ -76,14 +119,25 @@ int main(int argc, char *argv[]) {
         gettimeofday(&last, NULL);
         while (fgets(buf, sizeof(buf), stream) != NULL) {
             gettimeofday(&current, NULL);
-            long elapsed = (current.tv_sec - last.tv_sec) * sec + (current.tv_usec - last.tv_usec);
-            if(elapsed >= msec){
-                printf("Hello, every 0.1 seconds!\n");
-                last = current;
+            long elapsed = (current.tv_sec - last.tv_sec) * sec +
+                           (current.tv_usec - last.tv_usec);
+            char *syscall = match_regax(buf, regex_syscall);
+            char *systime = match_regax(buf, regex_time);
+            if(syscall != NULL){
+                printf("%s\n", syscall);
+                free(syscall);
             }
-         }
-        fclose(stream);
+            if(systime != NULL){
+                printf("%s\n", systime);
+                free(systime);
+            }
 
+            if (elapsed >= msec) {
+                last = current;
+                fflush(stdout);
+            }
+        }
+        fclose(stream);
     }
 
     return 0;
