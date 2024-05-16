@@ -10,6 +10,8 @@
 extern char **environ;
 // char cmd[100] = "";
 // char *path;
+#define STDERR 2
+#define STDOUT 1
 int main(int argc, char *argv[]) {
     char **env = environ;
     int pipefd[2];
@@ -26,12 +28,12 @@ int main(int argc, char *argv[]) {
 
     if (pid == 0) {
 
-        close(stderr);
+        close(STDERR);
         dup(pipefd[1]);
         close(pipefd[0]);
         close(pipefd[1]);
 
-        close(stdout);
+        close(STDOUT);
         int fd = open("/dev/null", O_WRONLY);
         dup(fd);
 
