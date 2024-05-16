@@ -180,7 +180,7 @@ int main(int argc, char *argv[]) {
                 qsort(call, nrcall, sizeof(syscall_t), cmp);
                 printf("Time; %d.%ds\n", nrtime / 10, nrtime % 10);
                 for(int i = 0; i < 5; i++){
-                    printf("%s (%d%%)\n", call[i].name, call[i].time * 100 / total_time);
+                    printf("%s (%d%%)\n", call[i].name, call[i].time);
                 }
                 printf("...\n");
                 printf("====================\n");
