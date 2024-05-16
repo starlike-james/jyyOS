@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
                 sscanf(syscall_time, "<%d.%d>", &sec, &usec);
                 // printf("%d %d\n", sec, usec);
                 for(int i = 0; i < nrcall; i++){
-                    if(strcpy(call[i].name, syscall_name) == 0){
+                    if(strcmp(call[i].name, syscall_name) == 0){
                         flag = true;
                         call[nrcall].time = sec * SEC + usec; 
                         break;
