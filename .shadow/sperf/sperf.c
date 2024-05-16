@@ -8,10 +8,11 @@
 #include <unistd.h>
 #include <regex.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 extern char **environ;
-const int sec = 1000000;
-const int msec = 100000;
+const int SEC = 1000000;
+const int MSEC = 100000;
 // char cmd[100] = "";
 // char *path;
 
@@ -22,6 +23,15 @@ struct timeval current;
 
 char regex_syscall[20] = "^[^(]*";
 char regex_time[20] = "<[0-9\\.]*>$";
+
+typedef struct{
+    char name[30];
+    long time;
+}syscall_t;
+
+syscall_t call[100];
+
+int nrcall = 0;
 
 char* match_regax(const char *line, const char *regex_text){
     regex_t regex;
@@ -44,7 +54,7 @@ char* match_regax(const char *line, const char *regex_text){
         int len = matches[0].rm_eo - matches[0].rm_so;
         char* matchbuf = malloc(len);
         strncpy(matchbuf, line + matches[0].rm_so, matches[0].rm_eo - matches[0].rm_so);
-        printf("Matched text: %.*s\n", matches[0].rm_eo - matches[0].rm_so, line + matches[0].rm_so);
+        // printf("Matched text: %.*s\n", matches[0].rm_eo - matches[0].rm_so, line + matches[0].rm_so);
         matchbuf[len] = '\0';
         // printf("%zu %d\n", strlen(matchbuf), len);
         assert(strlen(matchbuf) == len);
@@ -122,20 +132,38 @@ int main(int argc, char *argv[]) {
         while (fgets(buf, sizeof(buf), stream) != NULL) {
             // printf("%s\n", buf);
             gettimeofday(&current, NULL);
-            long elapsed = (current.tv_sec - last.tv_sec) * sec +
+            long elapsed = (current.tv_sec - last.tv_sec) * SEC +
                            (current.tv_usec - last.tv_usec);
-            char *syscall = match_regax(buf, regex_syscall);
+            char *syscallname = match_regax(buf, regex_syscall);
             char *systime = match_regax(buf, regex_time);
-            if(syscall != NULL){
-                printf("%s\n", syscall);
-                free(syscall);
+            if(syscallname != NULL && systime != NULL){
+                bool flag = false;
+                int sec = 0, usec = 0;
+                sscanf(systime, "<%d.%d>", &sec, &usec);
+                printf("%d %d\n", sec, usec);
+                for(int i = 0; i < nrcall; i++){
+                    if(strcpy(call[i].name, syscallname) == 0){
+                        flag = true;
+                        call[nrcall].time = sec * SEC + usec; 
+                        break;
+                    }
+                }
+                if(!flag){
+                    strcpy(call[nrcall].name, syscallname);
+                    call[nrcall].time = sec * SEC + usec; 
+                }
+            }
+
+            if(syscallname != NULL){
+                printf("%s\n", syscallname);
+                free(syscallname);
             }
             if(systime != NULL){
                 printf("%s\n", systime);
                 free(systime);
             }
 
-            if (elapsed >= msec) {
+            if (elapsed >= MSEC) {
                 last = current;
                 fflush(stdout);
             }
