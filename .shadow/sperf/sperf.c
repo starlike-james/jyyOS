@@ -4,14 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
-#include <time.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 extern char **environ;
+const int sec = 1000000;
+const int msec = 100000;
 // char cmd[100] = "";
 // char *path;
+
 #define STDOUT 1
 #define STDERR 2
+struct timeval last;
+struct timeval current;
 int main(int argc, char *argv[]) {
     char **env = environ;
     int pipefd[2];
@@ -68,9 +73,15 @@ int main(int argc, char *argv[]) {
             perror("fdopen");
             exit(EXIT_FAILURE);
         }
+        gettimeofday(&last, NULL);
         while (fgets(buf, sizeof(buf), stream) != NULL) {
-            printf("%s", buf);
-        }
+            gettimeofday(&current, NULL);
+            long elapsed = (current.tv_sec - last.tv_sec) * sec + (current.tv_usec - last.tv_usec);
+            if(elapsed >= msec){
+                printf("Hello, every 0.1 seconds!\n");
+                last = current;
+            }
+         }
         fclose(stream);
 
     }
