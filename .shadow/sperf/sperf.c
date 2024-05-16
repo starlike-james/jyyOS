@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
                 bool flag = false;
                 int sec = 0, usec = 0;
                 sscanf(systime, "<%d.%d>", &sec, &usec);
-                printf("%d %d\n", sec, usec);
+                // printf("%d %d\n", sec, usec);
                 for(int i = 0; i < nrcall; i++){
                     if(strcpy(call[i].name, syscallname) == 0){
                         flag = true;
