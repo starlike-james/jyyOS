@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
             perror("fdopen");
             exit(EXIT_FAILURE);
         }
+        printf("This is parent. \n");
         // fgets(buf, sizeof(buf), stream);
         while (fgets(buf, sizeof(buf), stream) != NULL) {
             printf("%s", buf);
