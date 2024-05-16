@@ -1,24 +1,34 @@
-#include <assert.h>
 #include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
-char *cmd;
-char **args;
-
+extern char **environ;
+char cmd[100] = "";
+char *path;
 int main(int argc, char *argv[]) {
-    assert(!argv[argc]);
-
-    cmd = argv[1];
-    args = argv + 1;
-
-    printf("%s\n", cmd);
-    for (int i = 0; i < argc - 1; i++) {
-        assert(args[i]);
-        printf("args[%d] = %s\n", i, args[i]);
+    char **env = environ;
+    for (int i = 0; i < argc; i++) {
+        assert(argv[i]);
+        printf("argv[%d] = %s\n", i, argv[i]);
     }
-    assert(!args[argc - 1]);
-    const char *path = getenv("PATH");
-    printf("%s\n", path);
+    assert(!argv[argc]);
+    argv[0] = "strace";
+
+
+    const char *PATH = getenv("PATH");
+    path = malloc(strlen(PATH));
+    strcpy(path, PATH);
+    char *prefix = strtok(path, ":");
+    while (prefix != NULL){
+        sprintf(cmd, "%s/strace", prefix);
+        execve(cmd, argv, env);
+    }
+
+
+    
     return 0;
 }
+
+
