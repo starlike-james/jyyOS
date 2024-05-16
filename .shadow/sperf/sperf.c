@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
             }
 
             if(syscall_name != NULL){
-                // printf("%s\n", syscall_name);
+                printf("%s\n", syscall_name);
                 free(syscall_name);
             }
             if(syscall_time != NULL){
