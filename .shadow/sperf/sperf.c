@@ -156,6 +156,7 @@ int main(int argc, char *argv[]) {
                 if(!flag){
                     strcpy(call[nrcall].name, syscall_name);
                     call[nrcall].time = sec * SEC + usec; 
+                    nrcall++;
                 }
             }
 
