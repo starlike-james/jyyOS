@@ -3,6 +3,7 @@
 #include <macro.h>
 
 central_list_t central;
+central_list_t slablist;
 
 static size_t align_up(size_t s) {
     size_t align = 1;
