@@ -172,17 +172,17 @@ int main(int argc, char *argv[]) {
 
             if (elapsed >= MSEC) {
                 int total_time = 0;
-                for(int i = 0; i < nrcall; i++){
-                    total_time += call[i].time;
-                }
-
-                nrtime++;
-                qsort(call, nrcall, sizeof(call), cmp);
-                printf("Time; %d.%ds\n", nrtime / 10, nrtime % 10);
-                for(int i = 0; i < 5; i++){
-                    printf("%s (%d%%)\n", call[i].name, call[i].time);
-                }
-                last = current;
+                // for(int i = 0; i < nrcall; i++){
+                //     total_time += call[i].time;
+                // }
+                //
+                // nrtime++;
+                // qsort(call, nrcall, sizeof(call), cmp);
+                // printf("Time; %d.%ds\n", nrtime / 10, nrtime % 10);
+                // for(int i = 0; i < 5; i++){
+                //     printf("%s (%d%%)\n", call[i].name, call[i].time);
+                // }
+                // last = current;
                 fflush(stdout);
             }
         }
