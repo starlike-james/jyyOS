@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
                 for(int i = 0; i < nrcall; i++){
                     if(strcmp(call[i].name, syscall_name) == 0){
                         flag = true;
-                        call[nrcall].time = sec * SEC + usec; 
+                        call[nrcall].time += sec * SEC + usec; 
                         break;
                     }
                 }
