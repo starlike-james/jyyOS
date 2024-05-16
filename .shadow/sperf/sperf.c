@@ -77,6 +77,28 @@ char* match_regax(const char *line, const char *regex_text){
     }
 }
 
+void output_sperf(){
+    int total_time = 0;
+    for(int i = 0; i < nrcall; i++){
+        total_time += call[i].time;
+    }
+
+    nrtime++;
+    qsort(call, nrcall, sizeof(syscall_t), cmp);
+    printf("Time: %d.%ds\n", nrtime / 10, nrtime % 10);
+    for(int i = 0; i < 5; i++){
+        printf("%s (%d%%)\n", call[i].name, call[i].time * 100 / total_time);
+    }
+    printf("...\n");
+    printf("====================\n");
+    for(int i = 0; i < 80; i++){
+        putchar('\0');
+    }
+    last = current;
+    fflush(stdout);
+}
+
+
 int main(int argc, char *argv[]) {
     char **env = environ;
     int pipefd[2];
@@ -171,45 +193,12 @@ int main(int argc, char *argv[]) {
             }
 
             if (elapsed >= MSEC) {
-                int total_time = 0;
-                for(int i = 0; i < nrcall; i++){
-                    total_time += call[i].time;
-                }
-
-                nrtime++;
-                qsort(call, nrcall, sizeof(syscall_t), cmp);
-                printf("Time: %d.%ds\n", nrtime / 10, nrtime % 10);
-                for(int i = 0; i < 5; i++){
-                    printf("%s (%d%%)\n", call[i].name, call[i].time * 100 / total_time);
-                }
-                printf("...\n");
-                printf("====================\n");
-                for(int i = 0; i < 80; i++){
-                    putchar('\0');
-                }
-                last = current;
-                fflush(stdout);
+                output_sperf();
             }
         }
-        
-        int total_time = 0;
-        for(int i = 0; i < nrcall; i++){
-            total_time += call[i].time;
-        }
 
-        nrtime++;
-        qsort(call, nrcall, sizeof(syscall_t), cmp);
-        printf("Time: %d.%ds\n", nrtime / 10, nrtime % 10);
-        for(int i = 0; i < 5; i++){
-            printf("%s (%d%%)\n", call[i].name, call[i].time * 100 / total_time);
-        }
-        printf("...\n");
-        printf("====================\n");
-        for(int i = 0; i < 80; i++){
-            putchar('\0');
-        }
-        last = current;
-        fflush(stdout);
+        output_sperf();
+        
         fclose(stream);
     }
 
