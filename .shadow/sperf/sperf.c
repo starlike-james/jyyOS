@@ -32,7 +32,7 @@ typedef struct{
 syscall_t call[2000];
 
 int cmp(const void *a, const void *b){
-    return ((syscall_t *)b - (syscall_t *)a);
+    return ((syscall_t *)a - (syscall_t *)b);
 }
 
 int nrcall = 0;
