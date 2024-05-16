@@ -43,7 +43,7 @@ char* match_regax(const char *line, const char *regex_text){
     if(result == 0){
         int len = matches[0].rm_eo - matches[0].rm_so;
         char* matchbuf = malloc(len);
-        strncpy(matchbuf, regex_text + matches[0].rm_so, matches[0].rm_eo - matches[0].rm_so);
+        strncpy(matchbuf, line + matches[0].rm_so, matches[0].rm_eo - matches[0].rm_so);
         printf("Matched text: %.*s\n", matches[0].rm_eo - matches[0].rm_so, line + matches[0].rm_so);
         matchbuf[len] = '\0';
         printf("%zu %d\n", strlen(matchbuf), len);
