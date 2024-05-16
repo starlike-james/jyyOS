@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
         }
         gettimeofday(&last, NULL);
         while (fgets(buf, sizeof(buf), stream) != NULL) {
-            printf("%s\n", buf);
+            // printf("%s\n", buf);
             gettimeofday(&current, NULL);
             long elapsed = (current.tv_sec - last.tv_sec) * sec +
                            (current.tv_usec - last.tv_usec);
