@@ -182,6 +182,8 @@ int main(int argc, char *argv[]) {
                 for(int i = 0; i < 5; i++){
                     printf("%s (%d%%)\n", call[i].name, call[i].time * 100 / total_time);
                 }
+                printf("...\n");
+                printf("====================\n");
                 last = current;
                 fflush(stdout);
             }
