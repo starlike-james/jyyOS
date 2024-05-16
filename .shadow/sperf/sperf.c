@@ -26,12 +26,17 @@ char regex_time[20] = "<[0-9\\.]*>$";
 
 typedef struct{
     char name[30];
-    long time;
+    int time;
 }syscall_t;
 
 syscall_t call[100];
 
+int cmp(const void *a, const void *b){
+    return ((syscall_t *)b - (syscall_t *)a);
+}
+
 int nrcall = 0;
+int nrtime = 0;
 
 char* match_regax(const char *line, const char *regex_text){
     regex_t regex;
@@ -134,36 +139,47 @@ int main(int argc, char *argv[]) {
             gettimeofday(&current, NULL);
             long elapsed = (current.tv_sec - last.tv_sec) * SEC +
                            (current.tv_usec - last.tv_usec);
-            char *syscallname = match_regax(buf, regex_syscall);
-            char *systime = match_regax(buf, regex_time);
-            if(syscallname != NULL && systime != NULL){
+            char *syscall_name = match_regax(buf, regex_syscall);
+            char *syscall_time = match_regax(buf, regex_time);
+            if(syscall_name != NULL && syscall_time != NULL){
                 bool flag = false;
                 int sec = 0, usec = 0;
-                sscanf(systime, "<%d.%d>", &sec, &usec);
+                sscanf(syscall_time, "<%d.%d>", &sec, &usec);
                 // printf("%d %d\n", sec, usec);
                 for(int i = 0; i < nrcall; i++){
-                    if(strcpy(call[i].name, syscallname) == 0){
+                    if(strcpy(call[i].name, syscall_name) == 0){
                         flag = true;
                         call[nrcall].time = sec * SEC + usec; 
                         break;
                     }
                 }
                 if(!flag){
-                    strcpy(call[nrcall].name, syscallname);
+                    strcpy(call[nrcall].name, syscall_name);
                     call[nrcall].time = sec * SEC + usec; 
                 }
             }
 
-            if(syscallname != NULL){
-                // printf("%s\n", syscallname);
-                free(syscallname);
+            if(syscall_name != NULL){
+                printf("%s\n", syscall_name);
+                free(syscall_name);
             }
-            if(systime != NULL){
-                printf("%s\n", systime);
-                free(systime);
+            if(syscall_time != NULL){
+                printf("%s\n", syscall_time);
+                free(syscall_time);
             }
 
             if (elapsed >= MSEC) {
+                int total_time = 0;
+                for(int i = 0; i < nrcall; i++){
+                    total_time += call[i].time;
+                }
+
+                nrtime++;
+                qsort(call, nrcall, sizeof(call), cmp);
+                printf("Time; %d.%ds\n", nrtime / 10, nrtime % 10);
+                for(int i = 0; i < 5; i++){
+                    printf("%s (%d%%)\n", call[i].name, call[i].time * 100 / total_time);
+                }
                 last = current;
                 fflush(stdout);
             }
