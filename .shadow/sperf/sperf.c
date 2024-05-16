@@ -44,7 +44,7 @@ char* match_regax(const char *line, const char *regex_text){
         char* matchbuf = malloc(len);
         strncpy(matchbuf, regex_text + matches[0].rm_so, matches[0].rm_eo - matches[0].rm_so);
         matchbuf[len] = '\0';
-        printf("%lu %d\n", strlen(matchbuf), len);
+        printf("%u %d\n", strlen(matchbuf), len);
         assert(strlen(matchbuf) == len);
         return matchbuf;
     }
