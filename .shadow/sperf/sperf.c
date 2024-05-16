@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <fcntl.h>
-#include <ostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
