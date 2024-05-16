@@ -25,14 +25,14 @@ char regex_syscall[20] = "^[^(]*";
 char regex_time[20] = "<[0-9\\.]*>$";
 
 typedef struct{
-    char name[100];
+    char name[40];
     int time;
 }syscall_t;
 
-syscall_t call[2000];
+syscall_t call[200];
 
 int cmp(const void *a, const void *b){
-    return ((syscall_t *)a - (syscall_t *)b);
+    return ((syscall_t *)b - (syscall_t *)a);
 }
 
 int nrcall = 0;
