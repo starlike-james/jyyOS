@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <regex.h>
+#include <inttypes.h>
 
 extern char **environ;
 const int sec = 1000000;
@@ -44,7 +45,7 @@ char* match_regax(const char *line, const char *regex_text){
         char* matchbuf = malloc(len);
         strncpy(matchbuf, regex_text + matches[0].rm_so, matches[0].rm_eo - matches[0].rm_so);
         matchbuf[len] = '\0';
-        printf("%u %d\n", strlen(matchbuf), len);
+        printf("%"PRIu64" %d\n", strlen(matchbuf), len);
         assert(strlen(matchbuf) == len);
         return matchbuf;
     }
