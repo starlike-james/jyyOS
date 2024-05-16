@@ -184,6 +184,9 @@ int main(int argc, char *argv[]) {
                 }
                 printf("...\n");
                 printf("====================\n");
+                for(int i = 0; i < 80; i++){
+                    putchar('\0');
+                }
                 last = current;
                 fflush(stdout);
             }
