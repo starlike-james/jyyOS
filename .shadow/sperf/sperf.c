@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
     while (prefix != NULL){
         sprintf(cmd, "%s/strace", prefix);
         execve(cmd, argv, env);
+        prefix = strtok(NULL, ":");
     }
 
 
