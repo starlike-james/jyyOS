@@ -37,7 +37,11 @@ void *mmap_disk(const char* fname){
 }
 
 void *sec_to_addr(u32 n){
-    return ((u8 *)hdr) + n * hdr->BPB_BytsPerSec;
+    if(n > hdr->BPB_TotSec32){
+        return NULL;
+    }else{
+        return ((u8 *)hdr) + n * hdr->BPB_BytsPerSec;
+    }
 }
 
 u32 cluster_to_sec(u32 n){
@@ -57,6 +61,10 @@ void traverse_clusters();
 
 void recover(u32 dataClus){
     struct bmpheader *bhr = (struct bmpheader *)cluster_to_addr(dataClus); 
+    if(bhr == NULL){
+        printf("Cluster #%u is out of bound\n", dataClus);
+        return;
+    }
     if(bhr->magic != 0x4d42){
         return;
     }
@@ -71,7 +79,6 @@ void traverse_dir(u32 clusId){
         if(dent->DIR_Attr & ATTR_HIDDEN || dent->DIR_Name[0] == 0 || dent->DIR_Name[0] == 0Xe5){
             continue;
         }else{
-            u32 dataClus = dent->DIR_FstClusLO | dent->DIR_FstClusHI << 16;
             char fname[256];
             int len = 0;
             bool complete = false;
@@ -107,6 +114,8 @@ void traverse_dir(u32 clusId){
                 continue;
             }
             printf("fname : %s\n", fname);
+            u32 dataClus = dent->DIR_FstClusLO | dent->DIR_FstClusHI << 16;
+            recover(dataClus);
         }
     }
 }
