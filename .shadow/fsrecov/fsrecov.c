@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <stdbool.h>
+#include <sys/stat.h>
 #include "fat32.h"
 
 struct fat32hdr *hdr;
@@ -68,6 +69,15 @@ void recover(u32 dataClus, const char* fname){
     if(bhr->magic != 0x4d42){
         return;
     }
+
+    const char *dpath = "/tmp/DCIM";
+    struct stat st = {0};
+    if (stat(dpath, &st) == -1) {
+        if (mkdir(dpath, 0700) == -1) {
+            perror("mkdir");
+        }
+    }
+
 
     char path[300];
     sprintf(path, "/tmp/DCIM/%s", fname);
