@@ -72,6 +72,7 @@ void recover(u32 dataClus, const char* fname){
     char path[300];
     sprintf(path, "/tmp/DCIM/%s", fname);
     int fd = open(path, O_RDWR);
+    printf("%s %u\n", path, bhr->filesize);
     write(fd, bhr, bhr->filesize);
     close(fd);
 }
