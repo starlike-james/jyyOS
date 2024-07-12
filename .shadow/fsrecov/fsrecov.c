@@ -78,7 +78,7 @@ void recover(u32 dataClus, const char* fname){
         }
     }
 
-    char path[300];
+    char path[310];
     sprintf(path, "/tmp/DCIM/%s", fname);
     int fd = open(path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     // if(fd == -1){
