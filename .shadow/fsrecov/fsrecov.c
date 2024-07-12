@@ -114,8 +114,8 @@ void traverse_dir(u32 clusId){
                 continue;
             }
             printf("fname : %s\n", fname);
-            u32 dataClus = dent->DIR_FstClusLO | dent->DIR_FstClusHI << 16;
-            // recover(dataClus);
+            u32 dataClus = dent->DIR_FstClusLO | (dent->DIR_FstClusHI << 16);
+            recover(dataClus);
         }
     }
 }
