@@ -78,19 +78,31 @@ void recover(u32 dataClus, const char* fname){
         }
     }
 
-
     char path[300];
     sprintf(path, "/tmp/DCIM/%s", fname);
     int fd = open(path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if(fd == -1){
-        perror("open ");
-    }
-    printf("%s %u\n", path, bhr->filesize);
+    // if(fd == -1){
+    //     perror("open ");
+    // }
     int ret = write(fd, bhr, bhr->filesize);
-    if(ret == -1){
-        perror("write ");
-    }
+    // if(ret == -1){
+    //     perror("write ");
+    // } 
     close(fd);
+
+    char cmd[300];
+    FILE *fp;
+    char buf[50];
+    sprintf(cmd, "sha1sum %s", path);
+    fp = popen(cmd, "r");
+    if(fp == NULL){
+        perror("popen");
+        return;
+    }
+    fscanf(fp, "%s", buf);
+    pclose(fp);
+    printf("%s", buf);
+    return;
 }
 
 void traverse_dir(u32 clusId){
@@ -135,9 +147,9 @@ void traverse_dir(u32 clusId){
             if(!complete){
                 continue;
             }
-            printf("fname : %s\n", fname);
             u32 dataClus = dent->DIR_FstClusLO | (dent->DIR_FstClusHI << 16);
             recover(dataClus, fname);
+            printf("  %s\n", fname);
         }
     }
 }
