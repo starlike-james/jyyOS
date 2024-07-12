@@ -68,9 +68,12 @@ void recover(u32 dataClus, const char* fname){
     if(bhr->magic != 0x4d42){
         return;
     }
-    int fd = open(fname, O_WRONLY);
-    write(fd, bhr, bhr->filesize);
 
+    char path[300];
+    sprintf(path, "/tmp/%s", fname);
+    int fd = open(path, O_RDWR);
+    write(fd, bhr, bhr->filesize);
+    close(fd);
 }
 
 void traverse_dir(u32 clusId){
