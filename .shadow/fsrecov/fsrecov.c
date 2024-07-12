@@ -57,7 +57,7 @@ void traverse_dir(u32 clusId){
     for(int d = 0; d < ndents; d++){
         struct fat32dent *dent = (struct fat32dent *)cluster_to_addr(clusId) + d;
         if(dent->DIR_Attr == ATTR_LONG_NAME){
-
+            continue;
         }else{
 
         }
@@ -140,19 +140,19 @@ void traverse_clusters(){
     for(u32 i = 0; i < ClusterCnt; i++){
         u32 clusId = i + 2;
         u8 *addr = cluster_to_addr(clusId);
-        // printf("%u ", clusId);
+        printf("%u ", clusId);
         if(check_bmpheader(addr)){
             ClustersMark[i] = BMPHEADER;
-            // printf("BMPHEADER\n");
+            printf("BMPHEADER\n");
         }else if(check_dir(addr)){
             ClustersMark[i] = DIRT;
-            // printf("DIRT\n");
+            printf("DIRT\n");
         }else if(check_used(addr)){
             ClustersMark[i] = BMPDATA;
-            // printf("BMPDATA\n");
+            printf("BMPDATA\n");
         }else{
             ClustersMark[i] = UNUSED;
-            // printf("UNUSED\n");
+            printf("UNUSED\n");
         }
     }
 }
