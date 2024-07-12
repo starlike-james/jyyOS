@@ -89,3 +89,5 @@ enum{
 #define ATTR_DIRECTORY 0x10
 #define ATTR_ARCHIVE   0x20
 #define ATTR_LONG_NAME 0x0f
+#define ATTR_LONG_NAME_MASK 0x3f
+#define LAST_LONG_ENTRY 0x40

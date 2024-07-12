@@ -51,15 +51,54 @@ void *cluster_to_addr(u32 n){
 
 void traverse_clusters();
 
+// void get_filename(, char *buf){
+//
+// }
+
 void traverse_dir(u32 clusId){
     int ndents = hdr->BPB_BytsPerSec * hdr->BPB_SecPerClus / sizeof(struct fat32dent);
 
     for(int d = 0; d < ndents; d++){
         struct fat32dent *dent = (struct fat32dent *)cluster_to_addr(clusId) + d;
-        if(dent->DIR_Attr == ATTR_LONG_NAME){
+        if(dent->DIR_Attr & ATTR_HIDDEN || dent->DIR_Name[0] == 0 || dent->DIR_Name[0] == 0Xe5){
             continue;
         }else{
+            u32 dataClus = dent->DIR_FstClusLO | dent->DIR_FstClusHI << 16;
+            char fname[256];
+            int len = 0;
+            bool complete = false;
+            // get_filename(dent, fname);
+            for(int i = d - 1; i >= 0; i --){
+                int ord = d - i;
+                struct fat32lfndent *ldent = (struct fat32lfndent *)cluster_to_addr(clusId) + i;
+                if((ldent->LDIR_Attr & ATTR_LONG_NAME_MASK) != ATTR_LONG_NAME){
+                    break;
+                }
 
+                if(ldent->LDIR_Ord & LAST_LONG_ENTRY){
+                    complete = true;
+                }
+
+                u16 LDIR_Name[13];
+                memcpy(LDIR_Name, ldent->LDIR_Name1, sizeof(ldent->LDIR_Name1));
+                memcpy((u8*)LDIR_Name + sizeof(ldent->LDIR_Name1), ldent->LDIR_Name2, sizeof(ldent->LDIR_Name2));
+                memcpy((u8*)LDIR_Name + sizeof(ldent->LDIR_Name1) + sizeof(ldent->LDIR_Name2), ldent->LDIR_Name3, sizeof(ldent->LDIR_Name3));
+                
+                for(int k = 0; k < sizeof(LDIR_Name) / sizeof(LDIR_Name[0]); k++){
+                    char c = LDIR_Name[k] & 0xff;
+                    if(c == '\0'){
+                        break;
+                    }
+                    if(c >= 0x20){
+                        fname[len++] = c;
+                    }
+                }
+            }
+            fname[len] = '\0';
+            if(!complete){
+                continue;
+            }
+            printf("fname : %s\n", fname);
         }
     }
 }
@@ -140,19 +179,19 @@ void traverse_clusters(){
     for(u32 i = 0; i < ClusterCnt; i++){
         u32 clusId = i + 2;
         u8 *addr = cluster_to_addr(clusId);
-        printf("%u ", clusId);
+        // printf("%u ", clusId);
         if(check_bmpheader(addr)){
             ClustersMark[i] = BMPHEADER;
-            printf("BMPHEADER\n");
+            // printf("BMPHEADER\n");
         }else if(check_dir(addr)){
             ClustersMark[i] = DIRT;
-            printf("DIRT\n");
+            // printf("DIRT\n");
         }else if(check_used(addr)){
             ClustersMark[i] = BMPDATA;
-            printf("BMPDATA\n");
+            // printf("BMPDATA\n");
         }else{
             ClustersMark[i] = UNUSED;
-            printf("UNUSED\n");
+            // printf("UNUSED\n");
         }
     }
 }
