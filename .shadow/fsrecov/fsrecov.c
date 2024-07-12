@@ -59,7 +59,7 @@ void traverse_clusters();
 //
 // }
 
-void recover(u32 dataClus){
+void recover(u32 dataClus, const char* fname){
     struct bmpheader *bhr = (struct bmpheader *)cluster_to_addr(dataClus); 
     if(bhr == NULL){
         printf("Cluster #%u is out of bound\n", dataClus);
@@ -68,7 +68,9 @@ void recover(u32 dataClus){
     if(bhr->magic != 0x4d42){
         return;
     }
-    printf("#%u is a bmp header\n", dataClus);
+    int fd = open(fname, O_WRONLY);
+    write(fd, bhr, bhr->filesize);
+
 }
 
 void traverse_dir(u32 clusId){
@@ -115,7 +117,7 @@ void traverse_dir(u32 clusId){
             }
             printf("fname : %s\n", fname);
             u32 dataClus = dent->DIR_FstClusLO | (dent->DIR_FstClusHI << 16);
-            recover(dataClus);
+            recover(dataClus, fname);
         }
     }
 }
