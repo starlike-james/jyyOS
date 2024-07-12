@@ -55,6 +55,14 @@ void traverse_clusters();
 //
 // }
 
+void recover(u32 dataClus){
+    struct bmpheader *bhr = (struct bmpheader *)cluster_to_addr(dataClus); 
+    if(bhr->magic != 0x4d42){
+        return;
+    }
+    printf("#%u is a bmp header\n", dataClus);
+}
+
 void traverse_dir(u32 clusId){
     int ndents = hdr->BPB_BytsPerSec * hdr->BPB_SecPerClus / sizeof(struct fat32dent);
 
@@ -98,7 +106,7 @@ void traverse_dir(u32 clusId){
             if(!complete){
                 continue;
             }
-            printf("fname : %s\n", fname);
+            // printf("fname : %s\n", fname);
         }
     }
 }
