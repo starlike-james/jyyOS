@@ -106,7 +106,7 @@ void traverse_dir(u32 clusId){
             if(!complete){
                 continue;
             }
-            // printf("fname : %s\n", fname);
+            printf("fname : %s\n", fname);
         }
     }
 }
