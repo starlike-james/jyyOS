@@ -69,7 +69,7 @@ bool check_dir(void *ClusterAddr){
 
 bool check_bmpheader(void *ClusterAddr){
     struct bmpheader* bhr = ClusterAddr;
-    if(bhr->magic == 0x424d){
+    if(bhr->magic == 0x4d42){
         return true;
     }else{
         return false;
