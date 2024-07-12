@@ -146,7 +146,7 @@ bool check_dir(void *ClusterAddr){
         if(dent->DIR_Name[8] == 'B' && dent->DIR_Name[9] == 'M' && dent->DIR_Name[10] == 'P'){
             bmpcnt++;
         }
-        if(bmpcnt > 10){
+        if(bmpcnt > 5){
             return true;
         }
     }
