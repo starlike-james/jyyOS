@@ -115,7 +115,7 @@ void recover(u32 dataClus, const char* fname){
                 bool flag = true;
 
                 printf("1\n");
-                printf("*pp = %x", *pp);
+                printf("*pp = %x\n", *pp);
                 for(int i = 0; i < padding; i++){
                     if(*(pp + i) != 0){
                         printf("%x ", *(pp + i));
