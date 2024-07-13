@@ -169,7 +169,7 @@ void recover(u32 dataClus, const char* fname){
                     clus = nextclus;
                 }
                 
-                printf("#%x ", clus);
+                printf("#%p ", clus);
                 if(remain > clusterSize){
                     write(fd, clus, clusterSize);
                     remain -= clusterSize;
