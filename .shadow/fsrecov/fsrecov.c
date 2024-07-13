@@ -138,6 +138,7 @@ void recover(u32 dataClus, const char* fname){
                 if (flag){
                     clus = clus + clusterSize;
                 }else{
+                    return;
                     u32 curdiff = 0xffffffff;
                     u8 *nextclus = NULL;
 
