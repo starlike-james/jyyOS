@@ -116,6 +116,8 @@ void recover(u32 dataClus, const char* fname){
             //     printf("%x ", *((u8 *)bhr + bhr->offset + i) );
             // }
 
+            int cnt = 0;
+
             while(remain > 0){
                 u8 *pp = clus + clusterSize + (rowSize - lastrow - padding);
                 bool flag = true;
@@ -138,14 +140,17 @@ void recover(u32 dataClus, const char* fname){
                 if (flag){
                     clus = clus + clusterSize;
                 }else{
+                    cnt++;
+                    printf("%d ", cnt);
                     u32 curdiff = 0xffffffff;
                     u8 *nextclus = NULL;
 
                     for(int k = 0; k < ClusterCnt; k++){
                         u32 clusId = k + 2;
-                        if(ClustersMark[k] == UNUSED){
+                        if(ClustersMark[k] == UNUSED || clusId == dataClus){
                             continue;
                         }
+
                         u8 *addr = cluster_to_addr(clusId);
 
                         u8 *pp = addr + (rowSize - lastrow - padding);
@@ -156,8 +161,6 @@ void recover(u32 dataClus, const char* fname){
                             }
                         }
                         if(flag2 == false) continue;
-
-                        printf("#%d ", k);
                         
                         u32 diff = 0;
                         struct pixel *prevPixel = (struct pixel *)(clus + clusterSize) - rowPixel;  
