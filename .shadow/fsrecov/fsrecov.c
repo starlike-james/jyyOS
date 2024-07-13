@@ -124,6 +124,8 @@ void recover(u32 dataClus, const char* fname){
                         write(fd, clus, remain);
                         remain = 0;
                     }
+                }else{
+                    break;
                 }
             }
 
