@@ -4,6 +4,12 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 
+struct pixel{
+    u8 red;
+    u8 green;
+    u8 blue;
+};
+
 struct fat32hdr {
     u8  BS_jmpBoot[3];
     u8  BS_OEMName[8];
@@ -51,6 +57,37 @@ struct fat32dent {
     u32 DIR_FileSize;
 } __attribute__((packed));
 
+struct fat32lfndent {
+    u8 LDIR_Ord;
+    u16 LDIR_Name1[5];
+    u8 LDIR_Attr;
+    u8 LDIR_Type;
+    u8 LDIR_Chksum;
+    u16 LDIR_Name2[6];
+    u16 LDIR_FstClusLO;
+    u16 LDIR_Name3[2];
+}__attribute__((packed));
+
+struct bmpheader {
+    u16 magic;
+    u32 filesize;
+    u16 reserved[2];
+    u32 offset;
+    u32 headersize;
+    u32 width;
+    u32 height;
+    u16 plane;
+    u16 bpp;
+}__attribute__((packed));
+
+enum{
+    UNKNOWN = 0,
+    DIRT,
+    BMPHEADER,
+    BMPDATA,
+    UNUSED
+};
+
 #define CLUS_INVALID   0xffffff7
 
 #define ATTR_READ_ONLY 0x01
@@ -59,3 +96,6 @@ struct fat32dent {
 #define ATTR_VOLUME_ID 0x08
 #define ATTR_DIRECTORY 0x10
 #define ATTR_ARCHIVE   0x20
+#define ATTR_LONG_NAME 0x0f
+#define ATTR_LONG_NAME_MASK 0x3f
+#define LAST_LONG_ENTRY 0x40
