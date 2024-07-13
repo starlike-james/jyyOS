@@ -109,6 +109,8 @@ void recover(u32 dataClus, const char* fname){
             while(remain > 0){
                 u8 *pp = clus + clusterSize + (rowSize - lastrow - padding);
                 bool flag = true;
+
+                printf("padding = %d rowSize = %d ", padding, rowSize);
                 for(int i = 0; i < rowSize; i++){
                     printf("%x ", *((u8 *)bhr + bhr->offset + i) );
                 }
