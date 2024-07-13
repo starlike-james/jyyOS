@@ -145,7 +145,7 @@ void recover(u32 dataClus, const char *fname) {
                     clus = clus + clusterSize;
                 } else {
                     cnt++;
-                    printf("%d ", cnt);
+                    // printf("%d ", cnt);
                     u32 curdiff = 0xffffffff;
                     // int *curdiff = malloc(rowPixel * sizeof(int));
                     // memset(curdiff, 0x3f ,rowPixel * sizeof(int));
