@@ -120,6 +120,8 @@ void recover(u32 dataClus, const char* fname){
                     return;
                 }
 
+                printf("1\n");
+                printf("*pp = %x\n", *pp);
                 for(int i = 0; i < padding; i++){
                     if(*(pp + i) != 0){
                         printf("%x ", *(pp + i));
@@ -128,7 +130,7 @@ void recover(u32 dataClus, const char* fname){
                 }
                 if (flag){
                     clus = clus + clusterSize;
-                    // printf("lastrow = %d \n", lastrow);
+                    printf("lastrow = %d \n", lastrow);
                     lastrow = (clusterSize + lastrow) % rowSize;
                     if(remain > clusterSize){
                         write(fd, clus, clusterSize);
@@ -137,7 +139,7 @@ void recover(u32 dataClus, const char* fname){
                         write(fd, clus, remain);
                         remain = 0;
                     }
-                    // printf("remain = %d \n", remain);
+                    printf("remain = %d \n", remain);
                 }else{
                     break;
                 }
