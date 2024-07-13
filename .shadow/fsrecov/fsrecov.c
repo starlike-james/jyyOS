@@ -130,7 +130,7 @@ void recover(u32 dataClus, const char* fname){
                 }
                 if (flag){
                     clus = clus + clusterSize;
-                    printf("lastrow = %d \n", lastrow);
+                    // printf("lastrow = %d \n", lastrow);
                     lastrow = (clusterSize + lastrow) % rowSize;
                     if(remain > clusterSize){
                         write(fd, clus, clusterSize);
@@ -139,7 +139,7 @@ void recover(u32 dataClus, const char* fname){
                         write(fd, clus, remain);
                         remain = 0;
                     }
-                    printf("remain = %d \n", remain);
+                    // printf("remain = %d \n", remain);
                 }else{
                     break;
                 }
