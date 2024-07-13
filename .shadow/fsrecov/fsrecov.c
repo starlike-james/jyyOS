@@ -143,6 +143,9 @@ void recover(u32 dataClus, const char* fname){
 
                     for(int k = 0; k < ClusterCnt; k++){
                         u32 clusId = k + 2;
+                        if(ClustersMark[k] == UNUSED){
+                            continue;
+                        }
                         u8 *addr = cluster_to_addr(clusId);
 
                         u8 *pp = addr + (rowSize - lastrow - padding);
