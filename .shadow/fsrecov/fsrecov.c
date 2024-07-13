@@ -129,20 +129,50 @@ void recover(u32 dataClus, const char* fname){
                     }
                     i++;
                 }
+
+                lastrow = (clusterSize + lastrow) % rowSize;
+                
                 if (flag){
                     clus = clus + clusterSize;
-                    // printf("lastrow = %d \n", lastrow);
-                    lastrow = (clusterSize + lastrow) % rowSize;
-                    if(remain > clusterSize){
-                        write(fd, clus, clusterSize);
-                        remain -= clusterSize;
-                    }else{
-                        write(fd, clus, remain);
-                        remain = 0;
-                    }
-                    // printf("remain = %d \n", remain);
                 }else{
-                    break;
+                    u32 curdiff = 0xffffffff;
+                    u8 *nextclus = NULL;
+                    u32 rowPixel = rowSize / (bhr->bpp / 8);
+                    for(int k = 0; k < ClusterCnt; k++){
+                        u32 clusId = k + 2;
+                        u8 *addr = cluster_to_addr(clusId);
+
+                        u8 *pp = addr + (rowSize - lastrow - padding);
+                        bool flag2 = true;
+                        for(int j = 0; j < padding; j++){
+                            if(*(pp + i) != 0){
+                                flag2 = false;
+                            }
+                        }
+                        if(flag2 == false) continue;
+                        
+                        u32 diff = 0;
+                        struct pixel *prevPixel = (struct pixel *)(clus + clusterSize) - rowPixel;  
+                        struct pixel *curPixel = (struct pixel *)addr;
+                        for(int j = 0; j < rowSize; j++){
+                            u32 prev = prevPixel->red << 16 | prevPixel->green << 8 | prevPixel->blue;
+                            u32 cur = curPixel->red << 16 | curPixel->green << 8 | curPixel->blue;
+                            diff += (cur - prev);
+                        }
+                        diff = diff & 0xff + (diff >> 8) & 0xff + (diff >> 16) & 0xff
+                        if(diff < curdiff){
+                            nextclus = addr;
+                        }
+                    }
+                    clus = nextclus;
+                }
+                
+                if(remain > clusterSize){
+                    write(fd, clus, clusterSize);
+                    remain -= clusterSize;
+                }else{
+                    write(fd, clus, remain);
+                    remain = 0;
                 }
             }
 

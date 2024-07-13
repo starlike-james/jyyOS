@@ -4,6 +4,12 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 
+struct pixel{
+    u8 red;
+    u8 green;
+    u8 blue;
+};
+
 struct fat32hdr {
     u8  BS_jmpBoot[3];
     u8  BS_OEMName[8];
