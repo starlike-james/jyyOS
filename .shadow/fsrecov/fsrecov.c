@@ -109,7 +109,8 @@ void recover(u32 dataClus, const char* fname){
             int lastrow = (offsetSize - bhr->offset) % rowSize;
             u8 *clus = (u8 *)bhr + offsetSize - clusterSize;
             u32 rowPixel = rowSize / (bhr->bpp / 8);
-            printf("rowPixel = %u rowSize = %u ", rowPixel, rowSize);
+            // printf("rowPixel = %u rowSize = %u ", rowPixel, rowSize);
+            //
             // printf("padding = %d rowSize = %d ", padding, rowSize);
             // for(int i = 0; i < rowSize; i++){
             //     printf("%x ", *((u8 *)bhr + bhr->offset + i) );
@@ -156,7 +157,7 @@ void recover(u32 dataClus, const char* fname){
                         u32 diff = 0;
                         struct pixel *prevPixel = (struct pixel *)(clus + clusterSize) - rowPixel;  
                         struct pixel *curPixel = (struct pixel *)addr;
-                        for(int j = 0; j < rowSize; j++){
+                        for(int j = 0; j < rowPixel; j++){
                             u32 prev = prevPixel->red << 16 | prevPixel->green << 8 | prevPixel->blue;
                             u32 cur = curPixel->red << 16 | curPixel->green << 8 | curPixel->blue;
                             diff += (cur - prev);
