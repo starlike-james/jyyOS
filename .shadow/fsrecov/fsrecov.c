@@ -93,6 +93,7 @@ void recover(u32 dataClus, const char* fname){
     
     if(padding == 0){
         int ret = write(fd, bhr, bhr->filesize);
+        printf("1 ");
     } else{
         u32 clusterSize = hdr->BPB_SecPerClus * hdr->BPB_BytsPerSec;
 
@@ -116,7 +117,7 @@ void recover(u32 dataClus, const char* fname){
                     }
                 }
                 if (flag){
-                    clus =  clus + clusterSize;
+                    clus = clus + clusterSize;
                     if(remain > clusterSize){
                         write(fd, clus, clusterSize);
                         remain -= clusterSize;
