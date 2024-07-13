@@ -153,7 +153,7 @@ void recover(u32 dataClus, const char* fname){
                         if(flag2 == false) continue;
                         
                         u32 diff = 0;
-                        prinft("rowPixel = %x\n", rowPixel);
+                        printf("rowPixel = %x\n", rowPixel);
                         struct pixel *prevPixel = (struct pixel *)(clus + clusterSize) - rowPixel;  
                         struct pixel *curPixel = (struct pixel *)addr;
                         for(int j = 0; j < rowSize; j++){
