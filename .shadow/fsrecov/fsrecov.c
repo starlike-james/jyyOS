@@ -86,10 +86,12 @@ void recover(u32 dataClus, const char* fname){
     //     perror("open ");
     // }
 
-    int rowSize = (24 * bhr->width + 31) / 32 * 4;
-    int padding = rowSize - 24 / 8 * bhr->width;
-    printf("padding %d  ", padding);
+    int rowSize = (bhr->bpp * bhr->width + 31) / 32 * 4;
+    int padding = rowSize - bhr->bpp * bhr->width / 8;
+    printf("padding %d", padding);
+    
     int ret = write(fd, bhr, bhr->filesize);
+
     // if(ret == -1){
     //     perror("write ");
     // } 

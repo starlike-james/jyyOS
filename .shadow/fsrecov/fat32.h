@@ -70,6 +70,8 @@ struct bmpheader {
     u32 headersize;
     u32 width;
     u32 height;
+    u16 plane;
+    u16 bpp;
 }__attribute__((packed));
 
 enum{
