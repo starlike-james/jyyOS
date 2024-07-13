@@ -187,6 +187,7 @@ void recover(u32 dataClus, const char *fname) {
                         // diff = (diff & 0xff) + ((diff >> 8) & 0xff) +
                         //        ((diff >> 16) & 0xff);
                         if (diff < curdiff) {
+                            curdiff = diff;
                             nextclus = addr;
                         }
                     }
