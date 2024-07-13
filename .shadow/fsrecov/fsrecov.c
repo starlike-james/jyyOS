@@ -11,6 +11,7 @@
 
 struct fat32hdr *hdr;
 
+
 u8* ClustersMark;
 
 u32 DataSecCnt;
@@ -84,6 +85,10 @@ void recover(u32 dataClus, const char* fname){
     // if(fd == -1){
     //     perror("open ");
     // }
+
+    int rowSize = (24 * bhr->width + 31) / 32 * 4;
+    int padding = rowSize - 24 / 8 * bhr->width;
+    printf("padding %d  ", padding);
     int ret = write(fd, bhr, bhr->filesize);
     // if(ret == -1){
     //     perror("write ");
