@@ -122,7 +122,7 @@ void recover(u32 dataClus, const char* fname){
                 }
                 if (flag){
                     clus = clus + clusterSize;
-                    lastrow = (clusterSize + lastrow) % rowSize;
+                    // lastrow = (clusterSize + lastrow) % rowSize;
                     if(remain > clusterSize){
                         write(fd, clus, clusterSize);
                         remain -= clusterSize;
