@@ -113,6 +113,7 @@ void recover(u32 dataClus, const char* fname){
             while(remain > 0){
                 u8 *pp = clus + clusterSize + (rowSize - lastrow - padding);
                 bool flag = true;
+                printf("1 ");
 
                 for(int i = 0; i < padding; i++){
                     if(*(pp + i) != 0){
@@ -124,7 +125,6 @@ void recover(u32 dataClus, const char* fname){
                     clus = clus + clusterSize;
                     printf("lastrow = %d ", lastrow);
                     lastrow = (clusterSize + lastrow) % rowSize;
-                    printf("1 ");
                     if(remain > clusterSize){
                         write(fd, clus, clusterSize);
                         remain -= clusterSize;
