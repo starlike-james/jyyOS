@@ -93,11 +93,11 @@ void recover(u32 dataClus, const char* fname){
     
     if(padding == 0){
         int ret = write(fd, bhr, bhr->filesize);
-        printf("1 ");
     } else{
         u32 clusterSize = hdr->BPB_SecPerClus * hdr->BPB_BytsPerSec;
 
         u32 offsetSize = ALIGNUP(bhr->offset, clusterSize);
+        printf("clusterSize %u offset %u offsetSize %u", clusterSize, bhr->offset, offsetSize);
 
         if(offsetSize >= bhr->filesize){
             write(fd, bhr, bhr->filesize);
