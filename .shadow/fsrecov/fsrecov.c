@@ -122,6 +122,7 @@ void recover(u32 dataClus, const char* fname){
 
                 printf("1\n");
                 printf("*pp = %x\n", *pp);
+                assert((uintptr_t)pp < (uintptr_t)hdr + hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec);
                 for(int i = 0; i < padding; i++){
                     if(*(pp + i) != 0){
                         printf("%x ", *(pp + i));
