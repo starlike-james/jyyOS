@@ -124,7 +124,7 @@ void recover(u32 dataClus, const char* fname){
                 int i = 0;
                 while(flag && i < padding){
                     if(*(pp + i) != 0){
-                        printf("%x ", *(pp + i));
+                        // printf("%x ", *(pp + i));
                         flag = false;
                     }
                     i++;
