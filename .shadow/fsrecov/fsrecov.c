@@ -115,7 +115,7 @@ void recover(u32 dataClus, const char* fname){
                 u8 *pp = clus + clusterSize + (rowSize - lastrow - padding);
                 bool flag = true;
 
-                if((uintptr_t)(clus + clusterSize) < (uintptr_t)hdr + hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec){
+                if((uintptr_t)(clus + clusterSize) > (uintptr_t)hdr + hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec){
                     printf("clus : out of bound ");
                     return;
                 }
