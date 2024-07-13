@@ -105,23 +105,24 @@ void recover(u32 dataClus, const char* fname){
             int remain = bhr->filesize - offsetSize;
             int lastrow = (offsetSize - bhr->offset) % rowSize;
             u8 *clus = (u8 *)bhr + offsetSize - clusterSize;
+            printf("padding = %d rowSize = %d ", padding, rowSize);
+            for(int i = 0; i < rowSize; i++){
+                printf("%x ", *((u8 *)bhr + bhr->offset + i) );
+            }
 
             while(remain > 0){
                 u8 *pp = clus + clusterSize + (rowSize - lastrow - padding);
                 bool flag = true;
 
-                printf("padding = %d rowSize = %d ", padding, rowSize);
-                for(int i = 0; i < rowSize; i++){
-                    printf("%x ", *((u8 *)bhr + bhr->offset + i) );
-                }
                 for(int i = 0; i < padding; i++){
                     if(*(pp + i) != 0){
-                        printf("%x ", *(pp + i));
+                        // printf("%x ", *(pp + i));
                         flag = false;
                     }
                 }
                 if (flag){
                     clus = clus + clusterSize;
+                    lastrow = (clusterSize + lastrow) % rowSize;
                     if(remain > clusterSize){
                         write(fd, clus, clusterSize);
                         remain -= clusterSize;
