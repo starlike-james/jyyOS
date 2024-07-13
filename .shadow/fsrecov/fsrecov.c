@@ -138,7 +138,6 @@ void recover(u32 dataClus, const char* fname){
                 if (flag){
                     clus = clus + clusterSize;
                 }else{
-                    return;
                     u32 curdiff = 0xffffffff;
                     u8 *nextclus = NULL;
 
@@ -154,6 +153,8 @@ void recover(u32 dataClus, const char* fname){
                             }
                         }
                         if(flag2 == false) continue;
+
+                        printf("#%d ", k);
                         
                         u32 diff = 0;
                         struct pixel *prevPixel = (struct pixel *)(clus + clusterSize) - rowPixel;  
