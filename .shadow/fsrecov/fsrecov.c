@@ -159,7 +159,7 @@ void recover(u32 dataClus, const char* fname){
                             u32 cur = curPixel->red << 16 | curPixel->green << 8 | curPixel->blue;
                             diff += (cur - prev);
                         }
-                        diff = diff & 0xff + (diff >> 8) & 0xff + (diff >> 16) & 0xff
+                        diff = (diff & 0xff) + ((diff >> 8) & 0xff) + ((diff >> 16) & 0xff)
                         if(diff < curdiff){
                             nextclus = addr;
                         }
