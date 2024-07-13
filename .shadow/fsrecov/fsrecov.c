@@ -103,7 +103,7 @@ void recover(u32 dataClus, const char* fname){
         if(offsetSize >= bhr->filesize){
             write(fd, bhr, bhr->filesize);
         }else{
-            return;
+            write(fd, bhr, offsetSize);
             int remain = bhr->filesize - offsetSize;
             int lastrow = (offsetSize - bhr->offset) % rowSize;
             u8 *clus = (u8 *)bhr + offsetSize - clusterSize;
