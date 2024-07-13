@@ -120,8 +120,7 @@ void recover(u32 dataClus, const char* fname){
                 //     return;
                 // }
 
-                printf("1\n");
-                printf("*pp = %x\n", *pp);
+                printf("pp = %p upperbound = %x\n", pp, (uintptr_t)hdr + hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec);
                 assert((uintptr_t)pp < (uintptr_t)hdr + hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec);
                 for(int i = 0; i < padding; i++){
                     if(*(pp + i) != 0){
