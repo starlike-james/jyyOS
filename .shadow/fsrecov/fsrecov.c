@@ -151,15 +151,17 @@ void recover(u32 dataClus, const char* fname){
                             }
                         }
                         if(flag2 == false) continue;
-                        printf("1 ");
                         
                         u32 diff = 0;
+                        prinft("rowPixel = %x\n", rowPixel);
                         struct pixel *prevPixel = (struct pixel *)(clus + clusterSize) - rowPixel;  
                         struct pixel *curPixel = (struct pixel *)addr;
                         for(int j = 0; j < rowSize; j++){
                             u32 prev = prevPixel->red << 16 | prevPixel->green << 8 | prevPixel->blue;
                             u32 cur = curPixel->red << 16 | curPixel->green << 8 | curPixel->blue;
                             diff += (cur - prev);
+                            prevPixel++;
+                            curPixel++;
                         }
                         diff = (diff & 0xff) + ((diff >> 8) & 0xff) + ((diff >> 16) & 0xff);
                         if(diff < curdiff){
