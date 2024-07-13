@@ -11,6 +11,7 @@
 
 struct fat32hdr *hdr;
 
+#define ALIGNUP(x, a) (((x) + ((a) - 1)) & ~((a) - 1))
 
 u8* ClustersMark;
 
@@ -88,9 +89,47 @@ void recover(u32 dataClus, const char* fname){
 
     int rowSize = (bhr->bpp * bhr->width + 31) / 32 * 4;
     int padding = rowSize - bhr->bpp * bhr->width / 8;
-    printf("padding %d ", padding);
+
     
-    int ret = write(fd, bhr, bhr->filesize);
+    if(padding == 0){
+        int ret = write(fd, bhr, bhr->filesize);
+    } else{
+        u32 clusterSize = hdr->BPB_SecPerClus * hdr->BPB_BytsPerSec;
+
+        u32 offsetSize = ALIGNUP(bhr->offset, clusterSize);
+
+        if(offsetSize >= bhr->filesize){
+            write(fd, bhr, bhr->filesize);
+        }else{
+            int remain = bhr->filesize - offsetSize;
+            int lastrow = (offsetSize - bhr->offset) % rowSize;
+            u8 *clus = (u8 *)bhr + offsetSize - clusterSize;
+
+            while(remain > 0){
+                u8 *pp = clus + clusterSize + (rowSize - lastrow - padding);
+                bool flag = true;
+                for(int i = 0; i < padding; i++){
+                    if(*(pp + i) != 0){
+                        printf("false ");
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag){
+                    clus =  clus + clusterSize;
+                    if(remain > clusterSize){
+                        write(fd, clus, clusterSize);
+                        remain -= clusterSize;
+                    }else{
+                        write(fd, clus, remain);
+                        remain = 0;
+                    }
+                }
+            }
+
+        }
+
+    }
 
     // if(ret == -1){
     //     perror("write ");
