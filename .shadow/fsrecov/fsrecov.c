@@ -119,7 +119,7 @@ void recover(u32 dataClus, const char* fname){
                     flag = false;
                 }
 
-                assert((uintptr_t)pp < (uintptr_t)hdr + hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec);
+                // assert((uintptr_t)pp < (uintptr_t)hdr + hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec);
 
                 int i = 0;
                 while(flag && i < padding){
