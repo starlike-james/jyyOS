@@ -103,6 +103,7 @@ void recover(u32 dataClus, const char* fname){
         if(offsetSize >= bhr->filesize){
             write(fd, bhr, bhr->filesize);
         }else{
+            return;
             int remain = bhr->filesize - offsetSize;
             int lastrow = (offsetSize - bhr->offset) % rowSize;
             u8 *clus = (u8 *)bhr + offsetSize - clusterSize;
@@ -135,36 +136,37 @@ void recover(u32 dataClus, const char* fname){
                 if (flag){
                     clus = clus + clusterSize;
                 }else{
-                    u32 curdiff = 0xffffffff;
-                    u8 *nextclus = NULL;
-                    u32 rowPixel = rowSize / (bhr->bpp / 8);
-                    for(int k = 0; k < ClusterCnt; k++){
-                        u32 clusId = k + 2;
-                        u8 *addr = cluster_to_addr(clusId);
-
-                        u8 *pp = addr + (rowSize - lastrow - padding);
-                        bool flag2 = true;
-                        for(int j = 0; j < padding; j++){
-                            if(*(pp + i) != 0){
-                                flag2 = false;
-                            }
-                        }
-                        if(flag2 == false) continue;
-                        
-                        u32 diff = 0;
-                        struct pixel *prevPixel = (struct pixel *)(clus + clusterSize) - rowPixel;  
-                        struct pixel *curPixel = (struct pixel *)addr;
-                        for(int j = 0; j < rowSize; j++){
-                            u32 prev = prevPixel->red << 16 | prevPixel->green << 8 | prevPixel->blue;
-                            u32 cur = curPixel->red << 16 | curPixel->green << 8 | curPixel->blue;
-                            diff += (cur - prev);
-                        }
-                        diff = (diff & 0xff) + ((diff >> 8) & 0xff) + ((diff >> 16) & 0xff);
-                        if(diff < curdiff){
-                            nextclus = addr;
-                        }
-                    }
-                    clus = nextclus;
+                    return;
+                    // u32 curdiff = 0xffffffff;
+                    // u8 *nextclus = NULL;
+                    // u32 rowPixel = rowSize / (bhr->bpp / 8);
+                    // for(int k = 0; k < ClusterCnt; k++){
+                    //     u32 clusId = k + 2;
+                    //     u8 *addr = cluster_to_addr(clusId);
+                    //
+                    //     u8 *pp = addr + (rowSize - lastrow - padding);
+                    //     bool flag2 = true;
+                    //     for(int j = 0; j < padding; j++){
+                    //         if(*(pp + i) != 0){
+                    //             flag2 = false;
+                    //         }
+                    //     }
+                    //     if(flag2 == false) continue;
+                    //     
+                    //     u32 diff = 0;
+                    //     struct pixel *prevPixel = (struct pixel *)(clus + clusterSize) - rowPixel;  
+                    //     struct pixel *curPixel = (struct pixel *)addr;
+                    //     for(int j = 0; j < rowSize; j++){
+                    //         u32 prev = prevPixel->red << 16 | prevPixel->green << 8 | prevPixel->blue;
+                    //         u32 cur = curPixel->red << 16 | curPixel->green << 8 | curPixel->blue;
+                    //         diff += (cur - prev);
+                    //     }
+                    //     diff = (diff & 0xff) + ((diff >> 8) & 0xff) + ((diff >> 16) & 0xff);
+                    //     if(diff < curdiff){
+                    //         nextclus = addr;
+                    //     }
+                    // }
+                    // clus = nextclus;
                 }
                 
                 if(remain > clusterSize){
