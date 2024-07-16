@@ -18,12 +18,12 @@ typedef struct __slab_t{
 typedef struct __slablist_t{
     size_t size;
     slab_t* head;
-    spinlock_t lk;
+    lspinlock_t lk;
 }slablist_t;
 
 typedef struct __cpuslablist_t{
     slablist_t slablist[16];
-    spinlock_t lk;
+    lspinlock_t lk;
 }cpuslablist_t;
 
 void cpuslablist_init();

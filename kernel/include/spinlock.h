@@ -19,16 +19,16 @@ typedef struct {
     //const char *name;
     struct lcpu *lcpu;
     int status;
-} spinlock_t;
+} lspinlock_t;
 
 #define spin_init() \
-    ((spinlock_t) { \
+    ((lspinlock_t) { \
         .status = UNLOCKED, \
         .lcpu = NULL, \
     })
 
-void spin_lock(spinlock_t *lk);
-void spin_unlock(spinlock_t *lk);
-bool holding(spinlock_t *lk);
+void spin_lock(lspinlock_t *lk);
+void spin_unlock(lspinlock_t *lk);
+bool holding(lspinlock_t *lk);
 
 #endif
