@@ -13,7 +13,7 @@ typedef struct __block_t{
 typedef struct {
     block_t *head;
     uintptr_t brk;
-    spinlock_t lk;
+    lspinlock_t lk;
 }central_list_t;
 
 

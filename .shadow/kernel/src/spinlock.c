@@ -10,9 +10,9 @@ struct lcpu lcpus[16];
 
 void push_off();
 void pop_off();
-bool holding(spinlock_t *lk);
+bool holding(lspinlock_t *lk);
 
-void spin_lock(spinlock_t *lk) {
+void spin_lock(lspinlock_t *lk) {
     // Disable interrupts to avoid deadlock.
     push_off();
 
@@ -30,7 +30,7 @@ void spin_lock(spinlock_t *lk) {
     lk->lcpu = mycpu;
 }
 
-void spin_unlock(spinlock_t *lk) {
+void spin_unlock(lspinlock_t *lk) {
     if (!holding(lk)) {
         panic("have released the same lock before!");
     }
@@ -43,7 +43,7 @@ void spin_unlock(spinlock_t *lk) {
 
 // Check whether this cpu is holding the lock.
 // Interrupts must be off.
-bool holding(spinlock_t *lk) {
+bool holding(lspinlock_t *lk) {
     return (lk->status == LOCKED && lk->lcpu == &lcpus[cpu_current()]);
 }
 

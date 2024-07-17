@@ -1,7 +1,11 @@
 #include <common.h>
 #include <macro.h>
 
-static void os_init() { pmm->init(); }
+static void os_init() { 
+    pmm->init();
+    // kmt->init();
+}
+
 void *ptr_all[8][1024];
 
 static void os_run() {
@@ -9,21 +13,6 @@ static void os_run() {
     printf("Hello World from CPU #%d\n", cpu_current());
     size_t align = 2;
     void **ptr = ptr_all[cpu_current()];
-    /*for(int i = 0; i < 4; i++){
-            ptr[i] = pmm->alloc(align);
-            printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
-            if(ptr[i] == NULL){
-                break;
-            }
-        }
-    for(int i = 0; i < 4; i++){
-         if(ptr[i] == NULL){
-                continue;
-          }
-          pmm->free(ptr[i]);
-          printf("pmm free %x success!, ptr = %x\n", align, ptr[i]);
-      }*/
-
     while (align < (4096 * KiB)) {
         for (int j = 0; j < 10; j++) {
 

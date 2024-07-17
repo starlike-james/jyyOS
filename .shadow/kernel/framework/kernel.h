@@ -1,7 +1,7 @@
 // DO NOT MODIFY: Will be reverted by the Online Judge.
-#ifndef KERNEL_H__
-
-#define KERNEL_H__
+// #ifndef KERNEL_H__
+//
+// #define KERNEL_H__
 #include <am.h>
 
 #define MODULE(mod) \
@@ -27,10 +27,7 @@ MODULE(pmm) {
     void *(*alloc)(size_t size);
     void  (*free)(void *ptr);
 };
-<<<<<<< HEAD
-#endif
-||||||| b1bcf32
-=======
+// #endif
 
 typedef struct task task_t;
 typedef struct spinlock spinlock_t;
@@ -52,4 +49,3 @@ MODULE(dev) {
     void (*init)();
     device_t *(*lookup)(const char *name);
 };
->>>>>>> 4718cd33cf11e730600bb08b8a4fbf6d41b60bf4
