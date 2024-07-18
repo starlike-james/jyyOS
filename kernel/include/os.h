@@ -7,3 +7,12 @@
 // not present in kernel.h. 
 
 // Include these definitions in os.h.
+#include <common.h>
+
+typedef struct handlerlist_t{
+    handler_t handler;
+    int seq;
+    int event;
+    struct handlerlist_t* next;
+}handlerlist_t;
+

@@ -1,8 +1,10 @@
+#include "am.h"
 #include <centrallist.h>
 #include <common.h>
 #include <macro.h>
 #include <slab.h>
 #include <spinlock.h>
+#include <stdbool.h>
 
 static void *kalloc(size_t size) {
     // You can add more .c files to the repo.
@@ -15,6 +17,7 @@ static void *kalloc(size_t size) {
     } else {
         ptr = slab_allocate(size);
     }
+    memset(ptr, 0, size);
 
     return ptr;
 }
@@ -25,6 +28,25 @@ static void kfree(void *ptr) {
         central_free(ptr, false);
     } else {
         slab_free(ptr);
+    }
+}
+
+static void *kalloc_safe(size_t size){
+    bool i = ienabled();
+    iset(false);
+    void *ret = kalloc(size);
+    if (i) {
+        iset(true);
+    }
+    return ret;
+}
+
+static void kfree_safe(void *ptr){
+    bool i = ienabled();
+    iset(false);
+    kfree(ptr);
+    if (i){
+        iset(true);
     }
 }
 
@@ -39,6 +61,6 @@ static void pmm_init() {
 
 MODULE_DEF(pmm) = {
     .init = pmm_init,
-    .alloc = kalloc,
-    .free = kfree,
+    .alloc = kalloc_safe,
+    .free = kfree_safe,
 };
