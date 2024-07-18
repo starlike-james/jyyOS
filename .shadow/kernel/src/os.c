@@ -51,7 +51,6 @@ static void os_run() {
                 if (ptr[i] != NULL) {
                     memset(ptr[i], 100, align);
                 }
-                printf("pmm alloc %x success!, ptr = %x\n", align, ptr[i]);
                 align++;
                 if (ptr[i] == NULL) {
                     break;
@@ -62,7 +61,6 @@ static void os_run() {
                     continue;
                 }
                 pmm->free(ptr[i]);
-                printf("pmm free %x success!, ptr = %x\n", align, ptr[i]);
             }
             align = tem;
         }
