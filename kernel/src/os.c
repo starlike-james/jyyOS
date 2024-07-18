@@ -8,7 +8,7 @@
 
 static void os_init() { 
     pmm->init();
-    // kmt->init();
+    kmt->init();
 }
 
 void *ptr_all[8][1024];

@@ -16,3 +16,6 @@ typedef struct handlerlist_t{
     struct handlerlist_t* next;
 }handlerlist_t;
 
+struct task{
+    
+};
