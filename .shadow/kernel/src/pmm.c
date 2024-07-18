@@ -17,7 +17,9 @@ static void *kalloc(size_t size) {
     } else {
         ptr = slab_allocate(size);
     }
-    memset(ptr, 0, size);
+    if(ptr != NULL){
+        memset(ptr, 0, size);
+    }
 
     return ptr;
 }

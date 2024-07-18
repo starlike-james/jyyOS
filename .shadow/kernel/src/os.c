@@ -1,8 +1,10 @@
 #include "am.h"
+#include "arch/x86_64-qemu.h"
 #include <common.h>
 #include <os.h>
 #include <macro.h>
 #include <signal.h>
+#include <stdint.h>
 
 static void os_init() { 
     pmm->init();
@@ -12,7 +14,6 @@ static void os_init() {
 void *ptr_all[8][1024];
 
 static void os_run() {
-    printf("%x\n", heap.start);
     // printf("Hello World from CPU #%d\n", cpu_current());
     // size_t align = 2;
     // void **ptr = ptr_all[cpu_current()];
@@ -69,6 +70,10 @@ static void os_run() {
 
 handlerlist_t *handlerlist = NULL;
 
+static bool sane_context(Context *ctx){
+    return ctx->rip >= 0x100000 && ctx->rip < (uintptr_t)heap.start;
+}
+
 static Context *os_trap(Event ev, Context *ctx) {
 
     Context *next = NULL;
@@ -85,7 +90,7 @@ static Context *os_trap(Event ev, Context *ctx) {
         current = current->next;
     }
     panic_on(!next, "returning NULL context");
-    // panic_on(sane_context(next), "returning to invalid context");
+    panic_on(!sane_context(next), "returning to invalid context");
     return next;
 }
 
