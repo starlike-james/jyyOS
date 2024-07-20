@@ -1,5 +1,6 @@
 #include <am.h>
-#include <klib-macros.h>
+#include <common.h>
+#include <os.h>
 #include <spinlock.h>
 
 // This is a ported version of spin-lock
@@ -12,7 +13,7 @@ void push_off();
 void pop_off();
 bool holding(lspinlock_t *lk);
 
-void spin_lock(lspinlock_t *lk) {
+void lspin_lock(lspinlock_t *lk) {
     // Disable interrupts to avoid deadlock.
     push_off();
 
@@ -30,7 +31,7 @@ void spin_lock(lspinlock_t *lk) {
     lk->lcpu = mycpu;
 }
 
-void spin_unlock(lspinlock_t *lk) {
+void lspin_unlock(lspinlock_t *lk) {
     if (!holding(lk)) {
         panic("have released the same lock before!");
     }
@@ -80,3 +81,4 @@ void pop_off(void) {
         iset(true);
     }
 }
+

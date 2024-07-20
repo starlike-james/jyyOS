@@ -6,9 +6,14 @@
 #include <signal.h>
 #include <stdint.h>
 
+// #define MAX_CPU 8
+// extern task_t *percpu_current[];
+// extern task_t idle[];
+// extern tasklist_t tasklist[];
+
 static void os_init() { 
     pmm->init();
-    // kmt->init();
+    kmt->init();
 }
 
 void *ptr_all[8][1024];
@@ -77,43 +82,45 @@ static bool sane_context(Context *ctx){
 static Context *os_trap(Event ev, Context *ctx) {
 
     Context *next = NULL;
-    handlerlist_t *current = handlerlist;
-    while (current != NULL) {
-        if (current->event == EVENT_NULL || current->event == ev.event) {
-            Context *r = current->handler(ev, ctx);
+    handlerlist_t *cur = handlerlist;
+    while (cur != NULL) {
+        if (cur->event == EVENT_NULL || cur->event == ev.event) {
+            Context *r = cur->handler(ev, ctx);
             panic_on(r && next, "returning multiple contexts");
             if (r) next = r;
         }
-        if(current->next != NULL){
-            assert(current->seq <= current->next->seq);
+        if(cur->next != NULL){
+            assert(cur->seq <= cur->next->seq);
         }
-        current = current->next;
+        cur = cur->next;
     }
+
+
     panic_on(!next, "returning NULL context");
-    panic_on(!sane_context(next), "returning to invalid context");
+    dpanic_on(!sane_context(next), "returning to invalid context");
     return next;
 }
 
 static void os_on_irq(int seq, int event, handler_t handler){
-    handlerlist_t *current = pmm->alloc(sizeof(handlerlist_t));
-    current->seq = seq;
-    current->event = event;
-    current->handler = handler;
-    current->next = NULL;
+    handlerlist_t *cur = pmm->alloc(sizeof(handlerlist_t));
+    cur->seq = seq;
+    cur->event = event;
+    cur->handler = handler;
+    cur->next = NULL;
 
-    if(handlerlist == NULL || current->seq <= handlerlist->seq){
-        current->next = handlerlist;
-        handlerlist = current;
+    if(handlerlist == NULL || cur->seq <= handlerlist->seq){
+        cur->next = handlerlist;
+        handlerlist = cur;
         return;
     }
 
     handlerlist_t *h = handlerlist;
-    while(h->next != NULL && h->next->seq < current->seq){
+    while(h->next != NULL && h->next->seq < cur->seq){
         h = h->next;
     }
 
-    current->next = h->next;
-    h->next = current; 
+    cur->next = h->next;
+    h->next = cur; 
     return;
 }
 
