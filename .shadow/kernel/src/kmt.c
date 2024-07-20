@@ -60,12 +60,14 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
         assert(curtask->status == RUNNING);
         logging("cpu%d: schedule from %s\n", cpu_current(), curtask->name);
         nexttask = curtask->next;
+        if(nexttask == NULL){
+            nexttask = curlist->head;
+        }
         while (nexttask != curtask) {
             if (nexttask->status == READY) {
                 break;
             }
             if (nexttask->next == NULL) {
-                logging("go to head\n");
                 nexttask = curlist->head;
             } else {
                 nexttask = nexttask->next;
