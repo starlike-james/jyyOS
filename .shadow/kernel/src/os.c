@@ -29,7 +29,6 @@ static void T1(void *arg) {
     int i = 0;
     while (1) { 
         putch('A'); 
-        iset(true);
         if(i == 0){
             iset(false);
             yield(); 
