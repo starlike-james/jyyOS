@@ -45,7 +45,7 @@ static void os_init() {
 void *ptr_all[8][1024];
 
 static void os_run() {
-    // printf("Hello World from CPU #%d\n", cpu_current());
+    logging("Hello World from CPU #%d\n", cpu_current());
     // size_t align = 2;
     // void **ptr = ptr_all[cpu_current()];
     // while (align < (4096 * KiB)) {
@@ -95,6 +95,7 @@ static void os_run() {
     //     align = align << 1;
     // }
     // printf("finish!\n");
+    iset(true);
     while (1);
 }
 
