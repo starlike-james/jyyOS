@@ -51,14 +51,13 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
     if (curtask == NULL) {
         logging("cpu%d: schedule from idle\n", cpu_current());
         nexttask = curlist->head;
-        while (nexttask->next != NULL) {
-            if(nexttask == NULL){
-                break;
+        if(nexttask != NULL){
+            while (nexttask->next != NULL) {
+                if (nexttask->status == READY) {
+                    break;
+                }
+                nexttask = nexttask->next;
             }
-            if (nexttask->status == READY) {
-                break;
-            }
-            nexttask = nexttask->next;
         }
     } else {
         assert(curtask->status == RUNNING);
