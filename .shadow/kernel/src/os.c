@@ -25,7 +25,7 @@ void delay() {
          i < 1000000; i++);
 }
 
-static void T1(void *arg) { while (1) { putch('A'); delay(); } }
+static void T1(void *arg) { while (1) { putch('A'); iset(false); yield(); } }
 static void T2(void *arg) { while (1) { putch('B'); delay(); } }
 static void T3(void *arg) { while (1) { putch('C'); delay(); } }
 
