@@ -26,8 +26,8 @@ void delay() {
 }
 
 static void T1(void *arg) { while (1) { putch('A'); iset(false); yield(); } }
-static void T2(void *arg) { while (1) { putch('B'); delay(); } }
-static void T3(void *arg) { while (1) { putch('C'); delay(); } }
+static void T2(void *arg) { while (1) { putch('B'); iset(false); yield(); } }
+static void T3(void *arg) { while (1) { putch('C'); iset(false); yield(); } }
 
 static void os_init() { 
     pmm->init();
