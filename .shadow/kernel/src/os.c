@@ -22,15 +22,15 @@ static inline task_t *task_alloc(){
 
 void delay() {
     for (int volatile i = 0;
-         i < 10000000; i++);
+         i < 1000000; i++);
 }
 
 static void T1(void *arg) {
     int i = 0;
     while (1) { 
         putch('A'); 
-        iset(false);
         if(i == 0){
+            iset(false);
             yield(); 
             i = 1;
         }
