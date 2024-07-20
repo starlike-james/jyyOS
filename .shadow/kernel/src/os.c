@@ -11,9 +11,35 @@
 // extern task_t idle[];
 // extern tasklist_t tasklist[];
 
+static inline task_t *task_alloc(){
+    return pmm->alloc(sizeof(task_t));
+}
+
+// static void run_test1(){
+//     
+// }
+
+
+void delay() {
+    for (int volatile i = 0;
+         i < 100000; i++);
+}
+
+static void T1(void *arg) { while (1) { putch('A'); delay(); } }
+static void T2(void *arg) { while (1) { putch('B'); delay(); } }
+static void T3(void *arg) { while (1) { putch('C'); delay(); } }
+
 static void os_init() { 
     pmm->init();
     kmt->init();
+#ifdef DEBUG
+    for(int i = 0; i < 3; i++){
+        kmt->create(task_alloc(), "A", T1, NULL); 
+        kmt->create(task_alloc(), "B", T2, NULL);
+        kmt->create(task_alloc(), "C", T3, NULL);
+    }
+#endif
+    
 }
 
 void *ptr_all[8][1024];

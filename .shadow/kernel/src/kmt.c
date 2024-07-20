@@ -49,6 +49,7 @@ static Context* kmt_schedule(Event ev, Context *ctx){
     kmt->spin_lock(&curlist->lk);
     task_t *nexttask = NULL;
     if(curtask == NULL){
+        logging("cpu%d: schedule from idle\n", cpu_current());
         nexttask = curlist->head;
         while(nexttask->next != NULL){
             if(nexttask->status == READY){
@@ -57,6 +58,7 @@ static Context* kmt_schedule(Event ev, Context *ctx){
             nexttask = nexttask->next;
         }
     }else{
+        logging("cpu%d: schedule from %s\n", cpu_current(), curtask->name);
         nexttask = curtask->next;
         while(nexttask != curtask){
             if(nexttask->status == READY){
@@ -81,12 +83,14 @@ static Context* kmt_schedule(Event ev, Context *ctx){
         curtask->status = READY;
         curtask = NULL;
         ret = &idle[cpu_current()].context;
+        logging("cpu%d : schedule to idle\n", cpu_current());
     }else{
         curtask->status = READY;
         curtask = nexttask;
         assert(nexttask->status == READY);
         curtask->status = RUNNING;
         ret = &curtask->context;
+        logging("cpu%d: schedule to %s\n", cpu_current(), curtask->name);
     }
     kmt->spin_unlock(&curlist->lk);
     return ret;
