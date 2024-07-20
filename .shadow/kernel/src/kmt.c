@@ -42,6 +42,7 @@ static Context *kmt_save_context(Event ev, Context *ctx) {
 }
 
 static Context *kmt_schedule(Event ev, Context *ctx) {
+
 #define curtask percpu_current[cpu_current()]
     tasklist_t *curlist = &tasklist[cpu_current()];
 
