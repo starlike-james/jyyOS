@@ -33,12 +33,6 @@ static void os_init() {
     pmm->init();
     kmt->init();
     
-}
-
-void *ptr_all[8][1024];
-
-static void os_run() {
-    logging("Hello World from CPU #%d\n", cpu_current());
 #ifdef DEBUG
     for(int i = 0; i < 3; i++){
         kmt->create(task_alloc(), "A", T1, NULL); 
@@ -46,6 +40,13 @@ static void os_run() {
         kmt->create(task_alloc(), "C", T3, NULL);
     }
 #endif
+
+}
+
+void *ptr_all[8][1024];
+
+static void os_run() {
+    logging("Hello World from CPU #%d\n", cpu_current());
     // size_t align = 2;
     // void **ptr = ptr_all[cpu_current()];
     // while (align < (4096 * KiB)) {
@@ -95,7 +96,8 @@ static void os_run() {
     //     align = align << 1;
     // }
     // printf("finish!\n");
-    iset(true);
+    iset(false);
+    yield();
     while (1);
 }
 
