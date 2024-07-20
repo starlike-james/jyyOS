@@ -58,6 +58,7 @@ static Context* kmt_schedule(Event ev, Context *ctx){
             nexttask = nexttask->next;
         }
     }else{
+        assert(curtask->status == RUNNING);
         logging("cpu%d: schedule from %s\n", cpu_current(), curtask->name);
         nexttask = curtask->next;
         while(nexttask != curtask){
@@ -75,7 +76,6 @@ static Context* kmt_schedule(Event ev, Context *ctx){
         }
     }
 
-    assert(curtask->status == RUNNING);
     Context *ret = NULL;
 
     if(nexttask == NULL){
