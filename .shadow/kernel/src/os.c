@@ -26,19 +26,20 @@ void delay() {
 }
 
 static void T1(void *arg) {
-    int i = 0;
+    // int i = 0;
     while (1) { 
         putch('A'); 
-        iset(false);
-        if(i == 0){
-            yield(); 
-            i = 1;
-        }
+        // iset(false);
+        // if(i == 0){
+        //     yield(); 
+        //     i = 1;
+        // }
+        delay();
     } 
 }
 
-static void T2(void *arg) { while (1) { putch('B'); iset(false); yield(); } }
-static void T3(void *arg) { while (1) { putch('C'); iset(false); yield(); } }
+static void T2(void *arg) { while (1) { putch('B'); delay(); } }
+static void T3(void *arg) { while (1) { putch('C'); delay(); } }
 
 static void os_init() { 
     pmm->init();
