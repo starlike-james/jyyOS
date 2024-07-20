@@ -15,4 +15,4 @@ run: build-arg
 CFLAGS += -ggdb -g
 
 gdb: build-arg
-	@qemu-system-x86_64 $(QEMU_FLAGS) -s -S 
+	qemu-system-x86_64 $(QEMU_FLAGS) -s -S 
