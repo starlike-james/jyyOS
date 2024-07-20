@@ -22,18 +22,18 @@ static inline task_t *task_alloc(){
 
 void delay() {
     for (int volatile i = 0;
-         i < 1000000; i++);
+         i < 10000000; i++);
 }
 
 static void T1(void *arg) {
-    // int i = 0;
+    int i = 0;
     while (1) { 
         putch('A'); 
-        // iset(false);
-        // if(i == 0){
-        //     yield(); 
-        //     i = 1;
-        // }
+        iset(false);
+        if(i == 0){
+            yield(); 
+            i = 1;
+        }
         delay();
     } 
 }
@@ -108,8 +108,7 @@ static void os_run() {
     //     align = align << 1;
     // }
     // printf("finish!\n");
-    iset(false);
-    yield();
+    iset(true);
     while (1);
 }
 
