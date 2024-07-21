@@ -45,7 +45,7 @@ static void run_test1() {
 
 static void delay() {
     for (int volatile i = 0;
-         i < 100000; i++);
+         i < 1000000; i++);
 }
 //
 // static void T1(void *arg) {
