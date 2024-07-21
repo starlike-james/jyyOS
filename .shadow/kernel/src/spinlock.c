@@ -18,6 +18,7 @@ void lspin_lock(lspinlock_t *lk) {
     push_off();
 
     // This is a deadlock.
+    logging("spinlock\n");
     if (holding(lk)) {
         panic("have acquired the same lock before!");
     }
@@ -32,6 +33,7 @@ void lspin_lock(lspinlock_t *lk) {
 }
 
 void lspin_unlock(lspinlock_t *lk) {
+    logging("spinunlock\n");
     if (!holding(lk)) {
         panic("have released the same lock before!");
     }
