@@ -5,6 +5,7 @@
 #include <os.h>
 #include <signal.h>
 #include <stdint.h>
+#include <devices.h>
 
 // #define MAX_CPU 8
 // extern task_t *percpu_current[];
@@ -33,20 +34,20 @@ static void T_consume(void *arg) {
 }
 
 static void run_test1() {
-    kmt->sem_init(&empty, "empty", 1);
+    kmt->sem_init(&empty, "empty", 4);
     kmt->sem_init(&fill, "fill", 0);
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 5; i++) {
         kmt->create(task_alloc(), "producer", T_produce, NULL);
     }
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 5; i++) {
         kmt->create(task_alloc(), "consumer", T_consume, NULL);
     }
 }
 
-static void delay() {
-    for (int volatile i = 0;
-         i < 1000000; i++);
-}
+// static void delay() {
+//     for (int volatile i = 0;
+//          i < 1000000; i++);
+// }
 //
 // static void T1(void *arg) {
 //     int i = 0;
@@ -65,17 +66,45 @@ static void delay() {
 // static void T2(void *arg) { while (1) { putch('B'); delay(); } }
 // static void T3(void *arg) { while (1) { putch('C'); delay(); } }
 //
+// static void run_test2(){
+//     for(int i = 0; i < 3; i++){
+//         kmt->create(task_alloc(), "A", T1, NULL);
+//         kmt->create(task_alloc(), "B", T2, NULL);
+//         kmt->create(task_alloc(), "C", T3, NULL);
+//     }
+// }
+
+// static void tty_reader(void *arg){
+//     device_t *tty = dev->lookup(arg);
+//     char cmd[128], resp[128], ps[128];
+//     sprintf(ps, "(%s $ ", (char *)arg);
+//     while(1){
+//         tty->ops->write(tty, 0, ps, strlen(ps));
+//         int nread = tty->ops->read(tty, 0, cmd, sizeof(cmd) - 1);
+//         cmd[nread] = '\0';
+//         sprintf(resp, "tty reader task: got %d character(s).\n", strlen(cmd));
+//         tty->ops->write(tty, 0, resp, strlen(resp));
+//     }
+// }
+//
+// static void run_test3(){
+//     kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
+//     kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
+// }
+
+
+
 static void os_init() {
     pmm->init();
     kmt->init();
 
 #ifdef DEBUG
-    // for(int i = 0; i < 3; i++){
-    //     kmt->create(task_alloc(), "A", T1, NULL);
-    //     kmt->create(task_alloc(), "B", T2, NULL);
-    //     kmt->create(task_alloc(), "C", T3, NULL);
-    // }
     run_test1();
+
+    // run_test2();
+
+    // dev->init();
+    // run_test3();
 #endif
 }
 
@@ -85,7 +114,7 @@ static void os_run() {
     // logging("Hello World from CPU #%d\n", cpu_current());
     iset(true);
     while (1){
-        delay();
+        // delay();
         yield();
     }
 }
