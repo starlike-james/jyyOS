@@ -48,7 +48,7 @@ static void T1(void *arg) {
             yield(); 
             i = 1;
         }
-        // delay();
+        delay();
     } 
 }
 
