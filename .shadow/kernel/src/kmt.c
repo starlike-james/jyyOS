@@ -56,12 +56,14 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
         if (nexttask != NULL) {
             while (nexttask->next != NULL) {
                 // kmt->spin_lock(&nexttask->lk);
-                if (nexttask->status == READY) {
-                    
+                if (nexttask->status == READY) { 
                     break;
                 }
                 // kmt->spin_unlock(&nexttask->lk);
                 nexttask = nexttask->next;
+            }
+            if(nexttask->status != READY){
+                nexttask = NULL;
             }
         }
     } else {
