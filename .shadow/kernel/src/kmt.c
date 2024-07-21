@@ -251,6 +251,7 @@ static void sem_init(sem_t *sem, const char *name, int value) {
 }
 
 static void sem_wait(sem_t *sem) {
+    logging("cpu%d : sem_wait %s\n", sem->name);
     int acquired = 0;
     kmt->spin_lock(&sem->spinlock);
     if (sem->count == 0) {
@@ -285,6 +286,7 @@ static void sem_wait(sem_t *sem) {
 }
 
 static void sem_signal(sem_t *sem) {
+    logging("cpu%d : sem_signal %s\n", sem->name);
     kmt->spin_lock(&sem->spinlock);
     kmt->spin_lock(&sem->waitlist.lk);
     if (sem->waitlist.head != NULL) {
