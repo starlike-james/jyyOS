@@ -55,9 +55,12 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
         nexttask = curlist->head;
         if (nexttask != NULL) {
             while (nexttask->next != NULL) {
+                // kmt->spin_lock(&nexttask->lk);
                 if (nexttask->status == READY) {
+                    
                     break;
                 }
+                // kmt->spin_unlock(&nexttask->lk);
                 nexttask = nexttask->next;
             }
         }
@@ -119,8 +122,6 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             }
             kmt->spin_unlock(&curtask->lk);
         }
-
-
 
         curtask = nexttask;
 
