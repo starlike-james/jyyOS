@@ -13,7 +13,7 @@
 # define dpanic_on(cond, s)
 #endif
 
-#ifdef DEBUG
+#ifdef DEBUGLOG
 # define logging(fmt, ...) printf(fmt, ##__VA_ARGS__)
 #else
 # define logging(fmt, ...) 
