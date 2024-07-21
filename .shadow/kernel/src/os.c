@@ -20,14 +20,14 @@ static sem_t empty, fill;
 static void T_produce(void *arg) {
     while (1) {
         P(&empty);
-        // putch('(');
+        putch('(');
         V(&fill);
     }
 }
 static void T_consume(void *arg) {
     while (1) {
         P(&fill);
-        // putch(')');
+        putch(')');
         V(&empty);
     }
 }
