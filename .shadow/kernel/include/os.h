@@ -66,7 +66,8 @@ enum{
     NEW,
     READY,
     RUNNING,
-    BLOCKED
+    BLOCKED,
+    TOBLOCK
 };
 
 #endif
