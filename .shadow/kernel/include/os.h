@@ -65,6 +65,7 @@ enum{
     UNUSED = 0,
     NEW,
     READY,
+    TOREADY,
     RUNNING,
     BLOCKED,
     TOBLOCK

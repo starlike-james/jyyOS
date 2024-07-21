@@ -10,6 +10,7 @@
 #define MAX_CPU 8
 
 task_t *percpu_current[MAX_CPU];
+task_t *percpu_pre[MAX_CPU];
 tasklist_t tasklist;
 task_t idle[MAX_CPU];
 
@@ -27,12 +28,21 @@ static void kmt_init() {
         idle[i].name = "idle";
 
         percpu_current[i] = NULL;
+        percpu_pre[i] = NULL;
     }
     os->on_irq(INT_MIN, EVENT_NULL, kmt_save_context);
     os->on_irq(INT_MAX, EVENT_NULL, kmt_schedule);
 }
 
 static Context *kmt_save_context(Event ev, Context *ctx) {
+
+#define pretask percpu_pre[cpu_current()]
+
+    if(pretask != NULL){
+        kmt->spin_lock(&pretask->lk);
+        pretask->status = READY;
+        kmt->spin_unlock(&pretask->lk);
+    }
     task_t *curtask = percpu_current[cpu_current()];
     if (curtask == NULL) {
         idle[cpu_current()].context = *ctx;
@@ -40,6 +50,8 @@ static Context *kmt_save_context(Event ev, Context *ctx) {
         curtask->context = *ctx;
     }
     return NULL;
+
+#undef pretask
 }
 
 static Context *kmt_schedule(Event ev, Context *ctx) {
@@ -95,11 +107,11 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
         if(curtask != NULL){
             kmt->spin_lock(&curtask->lk);
             if (curtask->status == RUNNING) {
-                curtask->status = READY;
+                curtask->status = TOREADY;
             } else if (curtask->status == TOBLOCK) {
                 curtask->status = BLOCKED;
             } else if (curtask->status == BLOCKED){
-                curtask->status = READY;
+                curtask->status = TOREADY;
             } else{
                 assert(0);
             }
@@ -114,11 +126,11 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
         if(curtask != NULL){
             kmt->spin_lock(&curtask->lk);
             if (curtask->status == RUNNING) {
-                curtask->status = READY;
+                curtask->status = TOREADY;
             } else if (curtask->status == TOBLOCK) {
                 curtask->status = BLOCKED;
             } else if (curtask->status == BLOCKED){
-                curtask->status = READY;
+                curtask->status = TOREADY;
             } else{
                 assert(0);
             }
@@ -142,6 +154,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
     }
     kmt->spin_unlock(&curlist->lk);
     return ret;
+
 #undef curtask
 }
 
