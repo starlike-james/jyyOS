@@ -15,57 +15,57 @@ static inline task_t *task_alloc(){
     return pmm->alloc(sizeof(task_t));
 }
 
-// static sem_t empty, fill;
-// #define P kmt->sem_wait
-// #define V kmt->sem_signal
-//
-// static void T_produce(void *arg) { while (1) { P(&empty); putch('('); V(&fill);  } }
-// static void T_consume(void *arg) { while (1) { P(&fill);  putch(')'); V(&empty); } }
-//
-// static void run_test1() {
-//     kmt->sem_init(&empty, "empty", 3);
-//     kmt->sem_init(&fill,  "fill",  0);
-//     for (int i = 0; i < 5; i++) {
-//         kmt->create(task_alloc(), "producer", T_produce, NULL);
-//     }
-//     for (int i = 0; i < 5; i++) {
-//         kmt->create(task_alloc(), "consumer", T_consume, NULL);
-//     }
+static sem_t empty, fill;
+#define P kmt->sem_wait
+#define V kmt->sem_signal
+
+static void T_produce(void *arg) { while (1) { P(&empty); putch('('); V(&fill);  } }
+static void T_consume(void *arg) { while (1) { P(&fill);  putch(')'); V(&empty); } }
+
+static void run_test1() {
+    kmt->sem_init(&empty, "empty", 3);
+    kmt->sem_init(&fill,  "fill",  0);
+    for (int i = 0; i < 5; i++) {
+        kmt->create(task_alloc(), "producer", T_produce, NULL);
+    }
+    for (int i = 0; i < 5; i++) {
+        kmt->create(task_alloc(), "consumer", T_consume, NULL);
+    }
+}
+
+// static void delay() {
+//     for (int volatile i = 0;
+//          i < 1000000; i++);
 // }
-
-static void delay() {
-    for (int volatile i = 0;
-         i < 1000000; i++);
-}
-
-static void T1(void *arg) {
-    int i = 0;
-    while (1) { 
-        putch('A'); 
-        iset(true);
-        if(i == 0){
-            iset(false);
-            yield(); 
-            i = 1;
-        }
-        delay();
-    } 
-}
-
-static void T2(void *arg) { while (1) { putch('B'); delay(); } }
-static void T3(void *arg) { while (1) { putch('C'); delay(); } }
+//
+// static void T1(void *arg) {
+//     int i = 0;
+//     while (1) { 
+//         putch('A'); 
+//         iset(true);
+//         if(i == 0){
+//             iset(false);
+//             yield(); 
+//             i = 1;
+//         }
+//         delay();
+//     } 
+// }
+//
+// static void T2(void *arg) { while (1) { putch('B'); delay(); } }
+// static void T3(void *arg) { while (1) { putch('C'); delay(); } }
 
 static void os_init() { 
     pmm->init();
     kmt->init();
     
 #ifdef DEBUG
-    for(int i = 0; i < 3; i++){
-        kmt->create(task_alloc(), "A", T1, NULL); 
-        kmt->create(task_alloc(), "B", T2, NULL);
-        kmt->create(task_alloc(), "C", T3, NULL);
-    }
-    // run_test1();
+    // for(int i = 0; i < 3; i++){
+    //     kmt->create(task_alloc(), "A", T1, NULL); 
+    //     kmt->create(task_alloc(), "B", T2, NULL);
+    //     kmt->create(task_alloc(), "C", T3, NULL);
+    // }
+    run_test1();
 #endif
 
 }
