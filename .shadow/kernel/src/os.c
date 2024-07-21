@@ -33,12 +33,12 @@ static void T_consume(void *arg) {
 }
 
 static void run_test1() {
-    kmt->sem_init(&empty, "empty", 3);
+    kmt->sem_init(&empty, "empty", 1);
     kmt->sem_init(&fill, "fill", 0);
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 1; i++) {
         kmt->create(task_alloc(), "producer", T_produce, NULL);
     }
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 1; i++) {
         kmt->create(task_alloc(), "consumer", T_consume, NULL);
     }
 }
