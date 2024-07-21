@@ -231,9 +231,16 @@ static void spin_init(spinlock_t *lk, const char *name) {
     lk->lk = lspin_init();
 }
 
-static void spin_lock(spinlock_t *lk) { lspin_lock(&lk->lk); }
+static void spin_lock(spinlock_t *lk) { 
+    logging("cpu%d : spinlock %s\n", cpu_current(), lk->name);
+    lspin_lock(&lk->lk); 
+}
 
-static void spin_unlock(spinlock_t *lk) { lspin_unlock(&lk->lk); }
+
+static void spin_unlock(spinlock_t *lk) { 
+    logging("cpu%d : spinunlock %s\n", cpu_current(), lk->name);
+    lspin_unlock(&lk->lk); 
+}
 
 static void sem_init(sem_t *sem, const char *name, int value) {
     kmt->spin_init(&sem->spinlock, name);
