@@ -85,7 +85,7 @@ static void os_run() {
     // logging("Hello World from CPU #%d\n", cpu_current());
     iset(true);
     while (1){
-        // yield();
+        yield();
     }
 }
 
