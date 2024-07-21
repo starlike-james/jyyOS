@@ -15,9 +15,11 @@ bool holding(lspinlock_t *lk);
 
 void lspin_lock(lspinlock_t *lk) {
     // Disable interrupts to avoid deadlock.
+    // logging("before push off\n");
     push_off();
 
     // This is a deadlock.
+    // logging("spinlock\n");
     if (holding(lk)) {
         panic("have acquired the same lock before!");
     }
@@ -32,6 +34,7 @@ void lspin_lock(lspinlock_t *lk) {
 }
 
 void lspin_unlock(lspinlock_t *lk) {
+    // logging("spinunlock\n");
     if (!holding(lk)) {
         panic("have released the same lock before!");
     }
@@ -55,9 +58,10 @@ bool holding(lspinlock_t *lk) {
 // push_off, pop_off leaves them off.
 void push_off(void) {
     int old = ienabled();
-    struct lcpu *c = mycpu;
 
     iset(false);
+
+    struct lcpu *c = mycpu;
     if (c->noff == 0) {
         c->intena = old;
     }
