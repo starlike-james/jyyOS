@@ -109,16 +109,18 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             kmt->spin_lock(&curtask->lk);
             if (curtask->status == RUNNING) {
                 curtask->status = TOREADY;
+                pretask = curtask;
             } else if (curtask->status == TOBLOCK) {
                 curtask->status = BLOCKED;
+                pretask = NULL;
             } else if (curtask->status == BLOCKED){
                 curtask->status = TOREADY;
+                pretask = curtask;
             } else{
                 assert(0);
             }
             kmt->spin_unlock(&curtask->lk);
         }
-        pretask = curtask;
 
         curtask = NULL;
         ret = &idle[cpu_current()].context;
@@ -129,16 +131,18 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             kmt->spin_lock(&curtask->lk);
             if (curtask->status == RUNNING) {
                 curtask->status = TOREADY;
+                pretask = curtask;
             } else if (curtask->status == TOBLOCK) {
                 curtask->status = BLOCKED;
+                pretask = NULL;
             } else if (curtask->status == BLOCKED){
                 curtask->status = TOREADY;
+                pretask = curtask;
             } else{
                 assert(0);
             }
             kmt->spin_unlock(&curtask->lk);
         }
-        pretask = curtask;
 
         curtask = nexttask;
 
