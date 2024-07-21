@@ -15,6 +15,7 @@ bool holding(lspinlock_t *lk);
 
 void lspin_lock(lspinlock_t *lk) {
     // Disable interrupts to avoid deadlock.
+    logging("before push off\n");
     push_off();
 
     // This is a deadlock.
