@@ -58,9 +58,10 @@ bool holding(lspinlock_t *lk) {
 // push_off, pop_off leaves them off.
 void push_off(void) {
     int old = ienabled();
-    struct lcpu *c = mycpu;
 
     iset(false);
+
+    struct lcpu *c = mycpu;
     if (c->noff == 0) {
         c->intena = old;
     }
