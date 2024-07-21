@@ -23,7 +23,7 @@ void T_produce(void *arg) { while (1) { P(&empty); putch('('); V(&fill);  } }
 void T_consume(void *arg) { while (1) { P(&fill);  putch(')'); V(&empty); } }
 
 static void run_test1() {
-    kmt->sem_init(&empty, "empty", 2);
+    kmt->sem_init(&empty, "empty", 3);
     kmt->sem_init(&fill,  "fill",  0);
     for (int i = 0; i < 3; i++) {
         kmt->create(task_alloc(), "producer", T_produce, NULL);
