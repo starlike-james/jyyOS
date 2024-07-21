@@ -26,7 +26,6 @@ struct spinlock{
     const char *name;
 };
 
-
 struct task{
     void (*entry)(void *);
     void *arg;
@@ -40,12 +39,27 @@ struct task{
 };
 
 
-
 typedef struct tasklist_t{
     spinlock_t lk;
     task_t *head;
 }tasklist_t;
 
+typedef struct waitlistnode_t{
+    task_t *task;
+    struct waitlistnode_t *next; 
+}waitlistnode_t;
+
+typedef struct waitlist_t{
+    spinlock_t lk;
+    waitlistnode_t *head;
+}waitlist_t;
+
+struct semaphore{
+    spinlock_t spinlock;
+    waitlist_t waitlist;
+    int count;
+    const char* name;
+};
 
 enum{
     UNUSED = 0,

@@ -9,6 +9,7 @@
 
 #define MAX_CPU 8
 
+
 task_t *percpu_current[MAX_CPU];
 tasklist_t tasklist[MAX_CPU];
 task_t idle[MAX_CPU];
@@ -51,7 +52,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
     if (curtask == NULL) {
         logging("cpu%d: schedule from idle\n", cpu_current());
         nexttask = curlist->head;
-        if(nexttask != NULL){
+        if (nexttask != NULL) {
             while (nexttask->next != NULL) {
                 if (nexttask->status == READY) {
                     break;
@@ -60,10 +61,10 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             }
         }
     } else {
-        assert(curtask->status == RUNNING);
+        // assert(curtask->status == RUNNING || curtask->status == BLOCKED);
         logging("cpu%d: schedule from %s\n", cpu_current(), curtask->name);
         nexttask = curtask->next;
-        if(nexttask == NULL){
+        if (nexttask == NULL) {
             nexttask = curlist->head;
         }
         while (nexttask != curtask) {
@@ -90,7 +91,13 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
         ret = &idle[cpu_current()].context;
         logging("cpu%d : schedule to idle\n", cpu_current());
     } else {
-        curtask->status = READY;
+        if (curtask->status == RUNNING) {
+            curtask->status = READY;
+        } else if (curtask->status == BLOCKED) {
+            ;
+        } else {
+            assert(0);
+        }
         curtask = nexttask;
         assert(nexttask->status == READY);
         curtask->status = RUNNING;
@@ -192,6 +199,64 @@ static void spin_lock(spinlock_t *lk) { lspin_lock(&lk->lk); }
 
 static void spin_unlock(spinlock_t *lk) { lspin_unlock(&lk->lk); }
 
+static void sem_init(sem_t *sem, const char *name, int value) {
+    kmt->spin_init(&sem->spinlock, name);
+    sem->name = name;
+    sem->count = value;
+    kmt->spin_init(&sem->waitlist.lk, "waitlist");
+    sem->waitlist.head = NULL;
+}
+
+static void sem_wait(sem_t *sem) {
+    int acquired = 0;
+    kmt->spin_lock(&sem->spinlock);
+    if (sem->count == 0) {
+        waitlistnode_t *curtask = pmm->alloc(sizeof(waitlistnode_t));
+        curtask->task = percpu_current[cpu_current()];
+        curtask->next = NULL;
+
+        kmt->spin_lock(&sem->waitlist.lk);
+        if (sem->waitlist.head == NULL) {
+            sem->waitlist.head = curtask;
+        } else {
+            waitlistnode_t *waitlist_end = sem->waitlist.head;
+            while (waitlist_end->next != NULL) {
+                waitlist_end = waitlist_end->next;
+            }
+            assert(waitlist_end->next == NULL);
+            waitlist_end->next = curtask;
+        }
+        kmt->spin_lock(&curtask->task->lk);
+        curtask->task->status = BLOCKED;
+        kmt->spin_unlock(&curtask->task->lk);
+        kmt->spin_unlock(&sem->waitlist.lk);
+    } else {
+        sem->count--;
+        assert(sem->count >= 0);
+        acquired = 1;
+    }
+    kmt->spin_unlock(&sem->spinlock);
+    if (!acquired) {
+        yield();
+    }
+}
+
+static void sem_signal(sem_t *sem) {
+    kmt->spin_lock(&sem->spinlock);
+    kmt->spin_lock(&sem->waitlist.lk);
+    if (sem->waitlist.head != NULL) {
+        task_t *task = sem->waitlist.head->task;
+        kmt->spin_lock(&task->lk);
+        task->status = READY ; // TODO
+        kmt->spin_unlock(&task->lk);
+        sem->waitlist.head = sem->waitlist.head->next;
+    }else{
+        sem->count++;
+    }
+    kmt->spin_unlock(&sem->waitlist.lk);
+    kmt->spin_unlock(&sem->spinlock);
+}
+
 MODULE_DEF(kmt) = {
     .init = kmt_init,
     .create = task_create,
@@ -199,4 +264,7 @@ MODULE_DEF(kmt) = {
     .spin_init = spin_init,
     .spin_lock = spin_lock,
     .spin_unlock = spin_unlock,
+    .sem_init = sem_init,
+    .sem_wait = sem_wait,
+    .sem_signal = sem_signal,
 };
