@@ -96,7 +96,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
         } else if (curtask->status == BLOCKED) {
             ;
         } else {
-            assert(0);
+            assert(curtask == NULL);
         }
         curtask = nexttask;
         assert(nexttask->status == READY);
