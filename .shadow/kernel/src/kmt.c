@@ -61,7 +61,6 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             }
         }
     } else {
-        // assert(curtask->status == RUNNING || curtask->status == BLOCKED);
         logging("cpu%d: schedule from %s\n", cpu_current(), curtask->name);
         nexttask = curtask->next;
         if (nexttask == NULL) {
