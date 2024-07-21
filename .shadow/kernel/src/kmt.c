@@ -130,8 +130,8 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
         kmt->spin_lock(&curtask->lk);
 
         if(nexttask->status != READY){
-            logging("cpu%d: try to schedule to %s\n", cpu_current(), nexttask->name);
-            logging("status: %d\n", nexttask->status);
+            // logging("cpu%d: try to schedule to %s\n", cpu_current(), nexttask->name);
+            // logging("status: %d\n", nexttask->status);
             assert(0);
         }
         curtask->status = RUNNING;
@@ -232,13 +232,13 @@ static void spin_init(spinlock_t *lk, const char *name) {
 }
 
 static void spin_lock(spinlock_t *lk) { 
-    logging("cpu%d : spinlock %s\n", cpu_current(), lk->name);
+    // logging("cpu%d : spinlock %s\n", cpu_current(), lk->name);
     lspin_lock(&lk->lk); 
 }
 
 
 static void spin_unlock(spinlock_t *lk) { 
-    logging("cpu%d : spinunlock %s\n", cpu_current(), lk->name);
+    // logging("cpu%d : spinunlock %s\n", cpu_current(), lk->name);
     lspin_unlock(&lk->lk); 
 }
 
@@ -251,7 +251,7 @@ static void sem_init(sem_t *sem, const char *name, int value) {
 }
 
 static void sem_wait(sem_t *sem) {
-    logging("cpu%d : sem_wait %s\n", cpu_current(), sem->name);
+    // logging("cpu%d : sem_wait %s\n", cpu_current(), sem->name);
     int acquired = 0;
     kmt->spin_lock(&sem->spinlock);
     if (sem->count == 0) {
@@ -286,7 +286,7 @@ static void sem_wait(sem_t *sem) {
 }
 
 static void sem_signal(sem_t *sem) {
-    logging("cpu%d : sem_signal %s\n", cpu_current(), sem->name);
+    // logging("cpu%d : sem_signal %s\n", cpu_current(), sem->name);
     kmt->spin_lock(&sem->spinlock);
     kmt->spin_lock(&sem->waitlist.lk);
     if (sem->waitlist.head != NULL) {
