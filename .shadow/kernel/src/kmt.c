@@ -129,6 +129,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
 
         if(nexttask->status != READY){
             logging("cpu%d: try to schedule to %s\n", cpu_current(), nexttask->name);
+            logging("status: %d", nexttask->status);
             assert(0);
         }
         curtask->status = RUNNING;
