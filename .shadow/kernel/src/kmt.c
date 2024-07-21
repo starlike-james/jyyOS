@@ -11,17 +11,18 @@
 
 
 task_t *percpu_current[MAX_CPU];
-tasklist_t tasklist[MAX_CPU];
+tasklist_t tasklist;
 task_t idle[MAX_CPU];
 
 static Context *kmt_save_context(Event ev, Context *ctx);
 static Context *kmt_schedule(Event ev, Context *ctx);
 
 static void kmt_init() {
-    for (int i = 0; i < MAX_CPU; i++) {
-        kmt->spin_init(&tasklist[i].lk, "tasklist");
-        tasklist[i].head = NULL;
 
+    kmt->spin_init(&tasklist.lk, "tasklist");
+    tasklist.head = NULL;
+
+    for (int i = 0; i < MAX_CPU; i++) {
         idle[i].cpuid = i;
         kmt->spin_init(&idle[i].lk, "idle");
         idle[i].name = "idle";
@@ -45,7 +46,7 @@ static Context *kmt_save_context(Event ev, Context *ctx) {
 static Context *kmt_schedule(Event ev, Context *ctx) {
 
 #define curtask percpu_current[cpu_current()]
-    tasklist_t *curlist = &tasklist[cpu_current()];
+    tasklist_t *curlist = &tasklist;
 
     kmt->spin_lock(&curlist->lk);
     task_t *nexttask = NULL;
@@ -109,7 +110,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
 }
 
 static void add_tasklist(task_t *task) {
-    tasklist_t *curlist = &tasklist[cpu_current()];
+    tasklist_t *curlist = &tasklist;
     kmt->spin_lock(&curlist->lk);
     if (!(holding(&task->lk.lk))) {
         panic("haven't get the task's lock");
@@ -168,11 +169,11 @@ static void task_teardown(task_t *task) {
     task->arg = NULL;
     memset(&task->context, 0, sizeof(task->context));
 
-    kmt->spin_lock(&tasklist[task->cpuid].lk);
-    if (tasklist[task->cpuid].head == task) {
-        tasklist[task->cpuid].head = task->next;
+    kmt->spin_lock(&tasklist.lk);
+    if (tasklist.head == task) {
+        tasklist.head = task->next;
     } else {
-        task_t *curtask = tasklist[task->cpuid].head;
+        task_t *curtask = tasklist.head;
         while (curtask->next != task) {
             curtask = curtask->next;
             if (curtask == NULL) {
@@ -183,7 +184,7 @@ static void task_teardown(task_t *task) {
         curtask->next = task->next;
     }
 
-    kmt->spin_unlock(&tasklist[task->cpuid].lk);
+    kmt->spin_unlock(&tasklist.lk);
 
     task->next = NULL;
     task->cpuid = -1;
