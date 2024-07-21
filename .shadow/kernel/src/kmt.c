@@ -86,7 +86,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
 
     if (nexttask == NULL) {
         logging("have no READY task\n");  
-        kmt->spin_lock(&curtask->lk);
+        // kmt->spin_lock(&curtask->lk);
 
         if (curtask->status == RUNNING) {
             curtask->status = READY;
@@ -98,12 +98,12 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             assert(curtask == NULL);
         }
 
-        kmt->spin_unlock(&curtask->lk);
+        // kmt->spin_unlock(&curtask->lk);
         curtask = NULL;
         ret = &idle[cpu_current()].context;
         logging("cpu%d : schedule to idle\n", cpu_current());
     } else {
-        kmt->spin_lock(&curtask->lk);
+        // kmt->spin_lock(&curtask->lk);
 
         if (curtask->status == RUNNING) {
             curtask->status = READY;
@@ -115,16 +115,16 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             assert(curtask == NULL);
         }
 
-        kmt->spin_unlock(&curtask->lk);
+        // kmt->spin_unlock(&curtask->lk);
 
         curtask = nexttask;
 
-        kmt->spin_lock(&curtask->lk);
+        // kmt->spin_lock(&curtask->lk);
 
         assert(nexttask->status == READY);
         curtask->status = RUNNING;
 
-        kmt->spin_unlock(&curtask->lk);
+        // kmt->spin_unlock(&curtask->lk);
         ret = &curtask->context;
         logging("cpu%d: schedule to %s\n", cpu_current(), curtask->name);
     }
