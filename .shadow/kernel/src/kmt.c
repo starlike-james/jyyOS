@@ -286,7 +286,7 @@ static void sem_wait(sem_t *sem) {
 }
 
 static void sem_signal(sem_t *sem) {
-    logging("cpu%d : sem_signal %s\n", sem->name);
+    logging("cpu%d : sem_signal %s\n", cpu_current(), sem->name);
     kmt->spin_lock(&sem->spinlock);
     kmt->spin_lock(&sem->waitlist.lk);
     if (sem->waitlist.head != NULL) {
