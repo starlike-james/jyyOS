@@ -62,11 +62,11 @@ static slab_t *add_new_slab(slablist_t* slablist, size_t size){
 
 void cpuslablist_init(){
     for(int i = 0; i <= 7; i++){
-        cpuslablist[i].lk = spin_init();
+        cpuslablist[i].lk = lspin_init();
         size_t size = 16;
         for(int j = 0; j <= 11; j++){
             slablist_t* slablist = &cpuslablist[i].slablist[j];
-            slablist->lk = spin_init();
+            slablist->lk = lspin_init();
             slablist->size = size;
             slablist->head = NULL;
             size = size << 1;
@@ -87,7 +87,7 @@ void *slab_allocate(size_t size){
 
     assert(slablist->size == align);
 
-    spin_lock(&slablist->lk);
+    lspin_lock(&slablist->lk);
 
     slab_t *slab = slablist->head;
     
@@ -104,7 +104,7 @@ void *slab_allocate(size_t size){
     } 
 
     if(slab == NULL){
-        spin_unlock(&slablist->lk);
+        lspin_unlock(&slablist->lk);
         return NULL;
     }
 
@@ -128,7 +128,7 @@ void *slab_allocate(size_t size){
     slab->free_count --;
     slab->ref_count ++;
     
-    spin_unlock(&slablist->lk);
+    lspin_unlock(&slablist->lk);
     //spin_unlock(&slab->lk);
     return ptr;
 } 
@@ -148,7 +148,7 @@ void slab_free(void *ptr){
     assert(slab->magic == SLAB_MEM);
 
     slablist_t *slablist = slab->slablist;
-    spin_lock(&slablist->lk);
+    lspin_lock(&slablist->lk);
     
     slab->ref_count--;
     if(slab->free_count == 0 && slab->ref_count == 0){
@@ -167,6 +167,6 @@ void slab_free(void *ptr){
         central_free(header, true);
     }
 
-    spin_unlock(&slablist->lk);
+    lspin_unlock(&slablist->lk);
 }
 

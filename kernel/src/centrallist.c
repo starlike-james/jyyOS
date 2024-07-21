@@ -19,12 +19,12 @@ void central_init(uintptr_t heap_start, uintptr_t heap_end) {
     head->size = (uintptr_t)heap.end - (uintptr_t)head;
     head->next = NULL;
     head->magic = FREE_MEM;
-    central.lk = spin_init();
+    central.lk = lspin_init();
     central.head = head;
 }
 
 void *central_allocate(size_t size, bool slab) {
-    spin_lock(&central.lk);
+    lspin_lock(&central.lk);
 
     block_t *cur = central.head;
     block_t *prev = NULL;
@@ -73,7 +73,7 @@ void *central_allocate(size_t size, bool slab) {
             header->next = NULL;
             header->magic = SLAB_MEM;
 
-            spin_unlock(&central.lk);
+            lspin_unlock(&central.lk);
             return (void *)ptr;
         } else {
             // big memory allocate
@@ -128,17 +128,17 @@ void *central_allocate(size_t size, bool slab) {
             header->next = NULL;
             header->magic = BIG_MEM;
 
-            spin_unlock(&central.lk);
+            lspin_unlock(&central.lk);
             return (void *)ptr;
         }
     }
 
-    spin_unlock(&central.lk);
+    lspin_unlock(&central.lk);
     return NULL;
 }
 
 void central_free(void *ptr, bool slab) {
-    spin_lock(&central.lk);
+    lspin_lock(&central.lk);
 
     uintptr_t addr = (uintptr_t)ptr;
     assert((addr & SLAB_MASK) == 0);
@@ -218,5 +218,5 @@ void central_free(void *ptr, bool slab) {
         prev->next = header->next;
     }
 
-    spin_unlock(&central.lk);
+    lspin_unlock(&central.lk);
 }

@@ -21,14 +21,14 @@ typedef struct {
     int status;
 } lspinlock_t;
 
-#define spin_init() \
+#define lspin_init() \
     ((lspinlock_t) { \
         .status = UNLOCKED, \
         .lcpu = NULL, \
     })
 
-void spin_lock(lspinlock_t *lk);
-void spin_unlock(lspinlock_t *lk);
+void lspin_lock(lspinlock_t *lk);
+void lspin_unlock(lspinlock_t *lk);
 bool holding(lspinlock_t *lk);
 
 #endif
