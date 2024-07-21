@@ -127,7 +127,10 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
 
         kmt->spin_lock(&curtask->lk);
 
-        assert(nexttask->status == READY);
+        if(nexttask->status != READY){
+            logging("cpu%d: try to schedule to %s\n", cpu_current(), nexttask->name);
+            assert(0);
+        }
         curtask->status = RUNNING;
 
         kmt->spin_unlock(&curtask->lk);
