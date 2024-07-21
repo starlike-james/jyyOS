@@ -76,8 +76,8 @@ static inline task_t *task_alloc() { return pmm->alloc(sizeof(task_t)); }
 
 static void tty_reader(void *arg){
     device_t *tty = dev->lookup(arg);
-    char cmd[128], resp[128], ps[16];
-    snprintf(ps, 16, "(%s $ ", (char *)arg);
+    char cmd[128], resp[128], ps[128];
+    sprintf(ps, "(%s $ ", (char *)arg);
     while(1){
         tty->ops->write(tty, 0, ps, strlen(ps));
         int nread = tty->ops->read(tty, 0, cmd, sizeof(cmd) - 1);
