@@ -43,10 +43,10 @@ static void run_test1() {
     }
 }
 
-static void delay() {
-    for (int volatile i = 0;
-         i < 100000; i++);
-}
+// static void delay() {
+//     for (int volatile i = 0;
+//          i < 100000; i++);
+// }
 //
 // static void T1(void *arg) {
 //     int i = 0;
@@ -85,7 +85,7 @@ static void os_run() {
     // logging("Hello World from CPU #%d\n", cpu_current());
     iset(true);
     while (1){
-        delay();
+        // delay();
         yield();
     }
 }
