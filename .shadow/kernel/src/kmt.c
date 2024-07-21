@@ -232,13 +232,13 @@ static void spin_init(spinlock_t *lk, const char *name) {
 }
 
 static void spin_lock(spinlock_t *lk) { 
-    // logging("cpu%d : spinlock %s\n", cpu_current(), lk->name);
+    logging("cpu%d : spinlock %s\n", cpu_current(), lk->name);
     lspin_lock(&lk->lk); 
 }
 
 
 static void spin_unlock(spinlock_t *lk) { 
-    // logging("cpu%d : spinunlock %s\n", cpu_current(), lk->name);
+    logging("cpu%d : spinunlock %s\n", cpu_current(), lk->name);
     lspin_unlock(&lk->lk); 
 }
 
