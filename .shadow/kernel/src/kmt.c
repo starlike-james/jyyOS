@@ -57,6 +57,7 @@ static Context *kmt_save_context(Event ev, Context *ctx) {
 static Context *kmt_schedule(Event ev, Context *ctx) {
 
 #define curtask percpu_current[cpu_current()]
+#define pretask percpu_pre[cpu_current()]
 
     tasklist_t *curlist = &tasklist;
 
@@ -117,6 +118,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             }
             kmt->spin_unlock(&curtask->lk);
         }
+        pretask = curtask;
 
         curtask = NULL;
         ret = &idle[cpu_current()].context;
@@ -136,6 +138,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
             }
             kmt->spin_unlock(&curtask->lk);
         }
+        pretask = curtask;
 
         curtask = nexttask;
 
@@ -156,6 +159,7 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
     return ret;
 
 #undef curtask
+#undef pretask
 }
 
 static void add_tasklist(task_t *task) {
