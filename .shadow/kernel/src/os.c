@@ -5,6 +5,7 @@
 #include <os.h>
 #include <signal.h>
 #include <stdint.h>
+#include <devices.h>
 
 // #define MAX_CPU 8
 // extern task_t *percpu_current[];
@@ -13,35 +14,35 @@
 
 static inline task_t *task_alloc() { return pmm->alloc(sizeof(task_t)); }
 
-static sem_t empty, fill;
-#define P kmt->sem_wait
-#define V kmt->sem_signal
-
-static void T_produce(void *arg) {
-    while (1) {
-        P(&empty);
-        putch('(');
-        V(&fill);
-    }
-}
-static void T_consume(void *arg) {
-    while (1) {
-        P(&fill);
-        putch(')');
-        V(&empty);
-    }
-}
-
-static void run_test1() {
-    kmt->sem_init(&empty, "empty", 1);
-    kmt->sem_init(&fill, "fill", 0);
-    for (int i = 0; i < 1; i++) {
-        kmt->create(task_alloc(), "producer", T_produce, NULL);
-    }
-    for (int i = 0; i < 1; i++) {
-        kmt->create(task_alloc(), "consumer", T_consume, NULL);
-    }
-}
+// static sem_t empty, fill;
+// #define P kmt->sem_wait
+// #define V kmt->sem_signal
+//
+// static void T_produce(void *arg) {
+//     while (1) {
+//         P(&empty);
+//         putch('(');
+//         V(&fill);
+//     }
+// }
+// static void T_consume(void *arg) {
+//     while (1) {
+//         P(&fill);
+//         putch(')');
+//         V(&empty);
+//     }
+// }
+//
+// static void run_test1() {
+//     kmt->sem_init(&empty, "empty", 1);
+//     kmt->sem_init(&fill, "fill", 0);
+//     for (int i = 0; i < 1; i++) {
+//         kmt->create(task_alloc(), "producer", T_produce, NULL);
+//     }
+//     for (int i = 0; i < 1; i++) {
+//         kmt->create(task_alloc(), "consumer", T_consume, NULL);
+//     }
+// }
 
 // static void delay() {
 //     for (int volatile i = 0;
@@ -65,17 +66,43 @@ static void run_test1() {
 // static void T2(void *arg) { while (1) { putch('B'); delay(); } }
 // static void T3(void *arg) { while (1) { putch('C'); delay(); } }
 //
+// static void run_test2(){
+//     for(int i = 0; i < 3; i++){
+//         kmt->create(task_alloc(), "A", T1, NULL);
+//         kmt->create(task_alloc(), "B", T2, NULL);
+//         kmt->create(task_alloc(), "C", T3, NULL);
+//     }
+// }
+
+static void tty_reader(void *arg){
+    device_t *tty = dev->lookup(arg);
+    char cmd[128], resp[128], ps[16];
+    snprintf(ps, 16, "(%s $ ", (char *)arg);
+    while(1){
+        tty->ops->write(tty, 0, ps, strlen(ps));
+        int nread = tty->ops->read(tty, 0, cmd, sizeof(cmd) - 1);
+        cmd[nread] = '\0';
+        sprintf(resp, "tty reader task: got %d character(s).\n", strlen(cmd));
+        tty->ops->write(tty, 0, resp, strlen(resp));
+    }
+}
+
+static void run_test3(){
+    kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
+    kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
+}
+
+
+
 static void os_init() {
     pmm->init();
     kmt->init();
 
 #ifdef DEBUG
-    // for(int i = 0; i < 3; i++){
-    //     kmt->create(task_alloc(), "A", T1, NULL);
-    //     kmt->create(task_alloc(), "B", T2, NULL);
-    //     kmt->create(task_alloc(), "C", T3, NULL);
-    // }
-    run_test1();
+    dev->init();
+    // run_test1();
+    // run_test2();
+    run_test3();
 #endif
 }
 
