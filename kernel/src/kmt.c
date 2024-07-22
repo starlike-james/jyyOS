@@ -11,6 +11,7 @@
 
 task_t *percpu_current[MAX_CPU];
 task_t *percpu_pre[MAX_CPU];
+task_t *percpu_signal[MAX_CPU];
 tasklist_t tasklist;
 task_t idle[MAX_CPU];
 
@@ -29,6 +30,7 @@ static void kmt_init() {
 
         percpu_current[i] = NULL;
         percpu_pre[i] = NULL;
+        percpu_signal[i] = NULL;
     }
     os->on_irq(INT_MIN, EVENT_NULL, kmt_save_context);
     os->on_irq(INT_MAX, EVENT_NULL, kmt_schedule);
@@ -37,11 +39,23 @@ static void kmt_init() {
 static Context *kmt_save_context(Event ev, Context *ctx) {
 
 #define pretask percpu_pre[cpu_current()]
+#define signaltask percpu_signal[cpu_current()]
 
     if(pretask != NULL){
         kmt->spin_lock(&pretask->lk);
         pretask->status = READY;
         kmt->spin_unlock(&pretask->lk);
+        pretask = NULL;
+    }
+
+    if(signaltask != NULL){
+        kmt->spin_lock(&signaltask->lk);
+        if(signaltask->status == TOAWAKE){
+            signaltask->status = READY;
+        }
+        signaltask->cpuid = -1;
+        kmt->spin_unlock(&signaltask->lk);
+        signaltask = NULL;
     }
     task_t *curtask = percpu_current[cpu_current()];
     if (curtask == NULL) {
@@ -52,12 +66,15 @@ static Context *kmt_save_context(Event ev, Context *ctx) {
     return NULL;
 
 #undef pretask
+#undef singaltask
+
 }
 
 static Context *kmt_schedule(Event ev, Context *ctx) {
 
 #define curtask percpu_current[cpu_current()]
 #define pretask percpu_pre[cpu_current()]
+#define signaltask percpu_signal[cpu_current()]
 
     tasklist_t *curlist = &tasklist;
 
@@ -112,6 +129,8 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
                 pretask = curtask;
             } else if (curtask->status == TOBLOCK) {
                 curtask->status = BLOCKED;
+                curtask->cpuid = cpu_current();
+                signaltask = curtask;
                 pretask = NULL;
             } else if (curtask->status == BLOCKED){
                 curtask->status = TOREADY;
@@ -136,6 +155,8 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
                 pretask = curtask;
             } else if (curtask->status == TOBLOCK) {
                 curtask->status = BLOCKED;
+                curtask->cpuid = cpu_current();
+                signaltask = curtask;
                 pretask = NULL;
             } else if (curtask->status == BLOCKED){
                 curtask->status = TOREADY;
@@ -169,6 +190,8 @@ static Context *kmt_schedule(Event ev, Context *ctx) {
 
 #undef curtask
 #undef pretask
+#undef signaltask
+
 }
 
 static void add_tasklist(task_t *task) {
@@ -222,7 +245,8 @@ static void task_teardown(task_t *task) {
 
     assert(task->cpuid >= 0 && task->cpuid < MAX_CPU);
 
-    // TODO
+    kmt->spin_lock(&tasklist.lk);
+    kmt->spin_lock(&task->lk); //cannot change the sequence to avoid deadlock
 
     pmm->free(task->stack);
     task->status = UNUSED;
@@ -231,7 +255,6 @@ static void task_teardown(task_t *task) {
     task->arg = NULL;
     memset(&task->context, 0, sizeof(task->context));
 
-    kmt->spin_lock(&tasklist.lk);
     if (tasklist.head == task) {
         tasklist.head = task->next;
     } else {
@@ -245,8 +268,9 @@ static void task_teardown(task_t *task) {
         assert(curtask->next == task);
         curtask->next = task->next;
     }
-
+    kmt->spin_unlock(&task->lk);
     kmt->spin_unlock(&tasklist.lk);
+    
 
     task->next = NULL;
     task->cpuid = -1;
@@ -313,6 +337,7 @@ static void sem_wait(sem_t *sem) {
 
 static void sem_signal(sem_t *sem) {
     // logging("cpu%d : sem_signal %s\n", cpu_current(), sem->name);
+#define pretask percpu_pre[cpu_current()]
     kmt->spin_lock(&sem->spinlock);
     kmt->spin_lock(&sem->waitlist.lk);
     if (sem->waitlist.head != NULL) {
@@ -321,7 +346,11 @@ static void sem_signal(sem_t *sem) {
         if (task->status == TOBLOCK) {
             task->status = BLOCKED;
         } else if (task->status == BLOCKED) {
-            task->status = READY;
+            if(task->cpuid != -1){
+                task->status = TOAWAKE;
+            }else{
+                task->status = READY;
+            }
         } else {
             assert(0);
         }
@@ -332,6 +361,7 @@ static void sem_signal(sem_t *sem) {
     }
     kmt->spin_unlock(&sem->waitlist.lk);
     kmt->spin_unlock(&sem->spinlock);
+#undef pretask
 }
 
 MODULE_DEF(kmt) = {

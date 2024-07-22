@@ -68,7 +68,8 @@ enum{
     TOREADY,
     RUNNING,
     BLOCKED,
-    TOBLOCK
+    TOBLOCK,
+    TOAWAKE
 };
 
 #endif
