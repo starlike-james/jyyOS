@@ -245,7 +245,8 @@ static void task_teardown(task_t *task) {
 
     assert(task->cpuid >= 0 && task->cpuid < MAX_CPU);
 
-    // TODO
+    kmt->spin_lock(&tasklist.lk);
+    kmt->spin_lock(&task->lk); //cannot change the sequence to avoid deadlock
 
     pmm->free(task->stack);
     task->status = UNUSED;
@@ -254,7 +255,6 @@ static void task_teardown(task_t *task) {
     task->arg = NULL;
     memset(&task->context, 0, sizeof(task->context));
 
-    kmt->spin_lock(&tasklist.lk);
     if (tasklist.head == task) {
         tasklist.head = task->next;
     } else {
@@ -268,8 +268,9 @@ static void task_teardown(task_t *task) {
         assert(curtask->next == task);
         curtask->next = task->next;
     }
-
+    kmt->spin_unlock(&task->lk);
     kmt->spin_unlock(&tasklist.lk);
+    
 
     task->next = NULL;
     task->cpuid = -1;
