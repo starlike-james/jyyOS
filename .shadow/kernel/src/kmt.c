@@ -42,6 +42,7 @@ static Context *kmt_save_context(Event ev, Context *ctx) {
         kmt->spin_lock(&pretask->lk);
         pretask->status = READY;
         kmt->spin_unlock(&pretask->lk);
+        pretask = NULL;
     }
     task_t *curtask = percpu_current[cpu_current()];
     if (curtask == NULL) {
